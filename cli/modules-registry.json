@@ -1,0 +1,19 @@
+{
+  "modules": [
+    {
+      "name": "@next-modular/auth-module",
+      "description": "Authentication module with login, register, and password reset",
+      "version": "^0.0.0",
+      "category": "authentication",
+      "features": ["login", "register", "password-reset", "session-management"]
+    },
+    {
+      "name": "@next-modular/test-module",
+      "description": "Test module with examples of routes, API endpoints, and middleware",
+      "version": "^0.0.0",
+      "category": "example",
+      "features": ["dynamic-routes", "api-endpoints", "middleware", "configuration"]
+    }
+  ]
+}
+

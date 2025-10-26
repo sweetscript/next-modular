@@ -1,0 +1,18 @@
+# Source files
+src/
+tsconfig.json
+
+# Development files
+*.md
+!CLI_README.md
+
+# Test files
+test/
+tests/
+*.test.js
+*.test.ts
+
+# Build artifacts
+*.log
+.DS_Store
+
