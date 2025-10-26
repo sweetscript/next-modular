@@ -1,19 +1,28 @@
-name: CI
+name: Release
 
 on:
   push:
-    branches: [develop]
-  pull_request:
-    branches: [develop]
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  pages: write
+  id-token: write
 
 jobs:
-  check:
-    name: Lint, Test, and Build
+  release:
+    name: Release
     runs-on: ubuntu-latest
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -32,4 +41,10 @@ jobs:
       
       - name: Run build
         run: npm run build
+      
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
 
