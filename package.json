@@ -4,7 +4,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "next-modular": "./cli/index.js"
+    "next-modular": "./cli/index.mjs"
   },
   "exports": {
     ".": {
@@ -26,7 +26,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest run --coverage"
+    "test:coverage": "vitest run --coverage",
+    "demo:dev": "cd demo/demo-app && npm run dev"
   },
   "peerDependencies": {
     "next": ">=16.0.0",
