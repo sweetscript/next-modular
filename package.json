@@ -3,6 +3,12 @@
   "version": "0.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "cli",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
     "next-modular": "./cli/index.mjs"
   },
