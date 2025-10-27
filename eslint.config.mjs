@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint';
 
 export default defineConfig(
   {
-    ignores: ['dist/**'],
+    ignores: ['dist/**', 'demo/**', 'coverage/**'],
   },
   eslint.configs.recommended,
   tseslint.configs.recommended,
@@ -17,7 +17,7 @@ export default defineConfig(
     },
   },
   {
-    files: ['cli/**/*.js'],
+    files: ['cli/**/*.js', 'cli/**/*.mjs'],
     languageOptions: {
       globals: {
         require: 'readonly',
