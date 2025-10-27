@@ -1,7 +1,19 @@
 #!/usr/bin/env node
 
-const { program } = require('commander');
-const packageJson = require('../package.json');
+import { program } from 'commander';
+import { readFileSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import init from './commands/init.mjs';
+import add from './commands/add.mjs';
+import create from './commands/create.mjs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const packageJson = JSON.parse(
+  readFileSync(join(__dirname, '../package.json'), 'utf8')
+);
 
 program
   .name('next-modular')
@@ -12,20 +24,21 @@ program
   .command('init')
   .description('Initialize Next.js app to use Next Modular')
   .option('-d, --directory <path>', 'Target directory', '.')
-  .action(require('./commands/init'));
+  .option('-y, --yes', 'Skip confirmation prompts and install everything')
+  .action(init);
 
 program
   .command('add [module]')
   .description('Add a module from the registry or npm')
   .option('-y, --yes', 'Skip confirmation prompts')
-  .action(require('./commands/add'));
+  .action(add);
 
 program
   .command('create')
   .description('Create a new local module')
   .option('-n, --name <name>', 'Module name')
   .option('-p, --path <path>', 'Module path', 'modules')
-  .action(require('./commands/create'));
+  .action(create);
 
 program.parse(process.argv);
 

@@ -1,11 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const inquirer = require('inquirer');
-const chalk = require('chalk');
-const ora = require('ora');
-const { execSync } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import ora from 'ora';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-const registry = require('../modules-registry.json');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const registry = JSON.parse(
+  fs.readFileSync(join(__dirname, '../modules-registry.json'), 'utf8')
+);
 
 async function add(moduleName, options) {
   console.log(chalk.cyan.bold('\n📦 Add Module to Next Modular\n'));
@@ -188,5 +195,5 @@ async function add(moduleName, options) {
   }
 }
 
-module.exports = add;
+export default add;
 

@@ -1,8 +1,9 @@
-const fs = require('fs');
-const path = require('path');
-const inquirer = require('inquirer');
-const chalk = require('chalk');
-const ora = require('ora');
+import fs from 'fs';
+import path from 'path';
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import ora from 'ora';
+import { execSync } from 'child_process';
 
 async function init(options) {
   console.log(chalk.cyan.bold('\n🚀 Next Modular Initialization\n'));
@@ -21,17 +22,22 @@ async function init(options) {
 
   if (!hasNext) {
     console.log(chalk.yellow('⚠️  Warning: Next.js not found in dependencies'));
-    const { continueAnyway } = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'continueAnyway',
-        message: 'Continue anyway?',
-        default: false,
-      },
-    ]);
+    
+    if (!options.yes) {
+      const { continueAnyway } = await inquirer.prompt([
+        {
+          type: 'confirm',
+          name: 'continueAnyway',
+          message: 'Continue anyway?',
+          default: false,
+        },
+      ]);
 
-    if (!continueAnyway) {
-      process.exit(0);
+      if (!continueAnyway) {
+        process.exit(0);
+      }
+    } else {
+      console.log(chalk.yellow('Continuing anyway (--yes mode)...\n'));
     }
   }
 
@@ -45,20 +51,29 @@ async function init(options) {
   console.log(chalk.green('✓ Next.js App Router detected\n'));
 
   // Ask what to set up
-  const { features } = await inquirer.prompt([
-    {
-      type: 'checkbox',
-      name: 'features',
-      message: 'What would you like to set up?',
-      choices: [
-        { name: 'Catch-all route for modules', value: 'catchAllRoute', checked: true },
-        { name: 'Catch-all API route', value: 'catchAllApi', checked: true },
-        { name: 'Middleware/Proxy file', value: 'middleware', checked: true },
-        { name: 'modules.config.ts file', value: 'modulesConfig', checked: true },
-        { name: 'Runtime initialization file', value: 'runtime', checked: true },
-      ],
-    },
-  ]);
+  let features;
+  
+  if (options.yes) {
+    // Install everything in non-interactive mode
+    features = ['catchAllRoute', 'catchAllApi', 'middleware', 'modulesConfig', 'runtime'];
+    console.log(chalk.cyan('Installing all features (--yes mode)...\n'));
+  } else {
+    const response = await inquirer.prompt([
+      {
+        type: 'checkbox',
+        name: 'features',
+        message: 'What would you like to set up?',
+        choices: [
+          { name: 'Catch-all route for modules', value: 'catchAllRoute', checked: true },
+          { name: 'Catch-all API route', value: 'catchAllApi', checked: true },
+          { name: 'Middleware/Proxy file', value: 'middleware', checked: true },
+          { name: 'modules.config.ts file', value: 'modulesConfig', checked: true },
+          { name: 'Runtime initialization file', value: 'runtime', checked: true },
+        ],
+      },
+    ]);
+    features = response.features;
+  }
 
   const spinner = ora('Setting up Next Modular...').start();
 
@@ -201,8 +216,8 @@ export const config = {
     // Create modules.config.ts
     if (features.includes('modulesConfig')) {
       const modulesConfigContent = `/**
- * Centralized module configuration
- * Import this file in both next.config.ts and route handlers
+ * Module configuration
+ * Add your list of modules here to use in your project
  */
 
 export const modules = [
@@ -240,41 +255,49 @@ export { modules };
       spinner.start();
     }
 
-    // Update next.config.ts if needed
-    const nextConfigPath = path.join(targetDir, 'next.config.ts');
-    const nextConfigJsPath = path.join(targetDir, 'next.config.js');
-    const nextConfigExists = fs.existsSync(nextConfigPath) || fs.existsSync(nextConfigJsPath);
-
-    if (nextConfigExists) {
-      const configPath = fs.existsSync(nextConfigPath) ? nextConfigPath : nextConfigJsPath;
-      const configContent = fs.readFileSync(configPath, 'utf8');
-
-      if (!configContent.includes('withNextModular')) {
-        console.log(chalk.yellow('\n⚠️  Please update your next.config file:'));
-        console.log(chalk.gray(`
-import type { NextConfig } from "next";
-import { withNextModular } from "next-modular/config";
-import { modules } from "./modules.config";
-
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default withNextModular({
-  modules,
-})(nextConfig);
-        `));
-      }
+    // Create modules directory
+    const modulesDir = path.join(targetDir, 'modules');
+    if (!fs.existsSync(modulesDir)) {
+      fs.mkdirSync(modulesDir, { recursive: true });
+      // Create .gitkeep to ensure the directory is tracked by git
+      fs.writeFileSync(path.join(modulesDir, '.gitkeep'), '');
+      spinner.succeed('Created modules directory');
+      spinner.start();
     }
 
     spinner.succeed('Next Modular setup complete!');
 
+    // Install next-modular package
+    spinner.start('Installing next-modular package...');
+    
+    try {
+      // Detect package manager
+      const packageManager = fs.existsSync(path.join(targetDir, 'package-lock.json'))
+        ? 'npm'
+        : fs.existsSync(path.join(targetDir, 'yarn.lock'))
+        ? 'yarn'
+        : fs.existsSync(path.join(targetDir, 'pnpm-lock.yaml'))
+        ? 'pnpm'
+        : 'npm';
+
+      const installCmd = packageManager === 'npm'
+        ? 'npm install next-modular'
+        : packageManager === 'yarn'
+        ? 'yarn add next-modular'
+        : 'pnpm add next-modular';
+
+      execSync(installCmd, { cwd: targetDir, stdio: 'inherit' });
+      spinner.succeed('Installed next-modular package');
+    } catch (installError) {
+      spinner.fail('Failed to install next-modular package');
+      console.log(chalk.yellow('Please install manually: ') + chalk.white('npm install next-modular'));
+      console.log(chalk.gray('Error: ') + installError.message);
+    }
+
     console.log(chalk.green.bold('\n✨ Setup complete!\n'));
     console.log(chalk.cyan('Next steps:'));
     console.log(chalk.gray('  1. Add modules with: ') + chalk.white('npx next-modular add'));
-    console.log(chalk.gray('  2. Or create a module: ') + chalk.white('npx next-modular create'));
-    console.log(chalk.gray('  3. Update next.config.ts as shown above'));
-    console.log(chalk.gray('  4. Run: ') + chalk.white('npm install next-modular\n'));
+    console.log(chalk.gray('  2. Or create a module: ') + chalk.white('npx next-modular create\n'));
 
   } catch (error) {
     spinner.fail('Setup failed');
@@ -283,5 +306,5 @@ export default withNextModular({
   }
 }
 
-module.exports = init;
+export default init;
 

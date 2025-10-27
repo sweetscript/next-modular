@@ -4,7 +4,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "next-modular": "./cli/index.js"
+    "next-modular": "./cli/index.mjs"
   },
   "exports": {
     ".": {

@@ -1,8 +1,8 @@
-const fs = require('fs');
-const path = require('path');
-const inquirer = require('inquirer');
-const chalk = require('chalk');
-const ora = require('ora');
+import fs from 'fs';
+import path from 'path';
+import inquirer from 'inquirer';
+import chalk from 'chalk';
+import ora from 'ora';
 
 async function create(options) {
   console.log(chalk.cyan.bold('\n🎨 Create New Module\n'));
@@ -86,9 +86,18 @@ async function create(options) {
       const routesDir = path.join(srcDir, 'routes');
       fs.mkdirSync(routesDir);
 
-      const homeRouteContent = `import React from 'react';
+      const homeRouteContent = `'use client';
+
+import React from 'react';
+import Link from 'next/link';
 
 export default function ${ModuleClassName}HomePage() {
+  const exampleItems = [
+    { id: '123', name: 'Item 123' },
+    { id: 'user-42', name: 'User 42' },
+    { id: 'abc-xyz', name: 'ABC XYZ' },
+  ];
+
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <h1 style={{ marginBottom: '1.5rem', color: '#0070f3' }}>
@@ -98,12 +107,43 @@ export default function ${ModuleClassName}HomePage() {
         Welcome to the ${moduleName} module!
       </p>
       
+      <div style={{ marginTop: '2rem', padding: '1.5rem', backgroundColor: '#f0f9ff', borderRadius: '8px', border: '1px solid #0070f3' }}>
+        <h2 style={{ marginBottom: '1rem', color: '#0070f3' }}>Dynamic Routes</h2>
+        <p style={{ marginBottom: '1rem', fontSize: '0.9rem', color: '#666' }}>
+          Click on any link below to see the dynamic route in action:
+        </p>
+        <ul style={{ listStyle: 'none', padding: 0 }}>
+          {exampleItems.map((item) => (
+            <li key={item.id} style={{ marginBottom: '0.5rem' }}>
+              <Link 
+                href={\`/${moduleName}/\${item.id}\`}
+                style={{ 
+                  color: '#0070f3', 
+                  textDecoration: 'none',
+                  padding: '0.5rem 1rem',
+                  display: 'block',
+                  borderRadius: '4px',
+                  transition: 'background-color 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e6f3ff'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <strong>{item.name}</strong>
+                <code style={{ marginLeft: '0.5rem', fontSize: '0.85rem', color: '#666' }}>
+                  /${moduleName}/{item.id}
+                </code>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+      
       <div style={{ marginTop: '2rem' }}>
         <h2 style={{ marginBottom: '1rem' }}>Getting Started</h2>
         <ul style={{ lineHeight: '2' }}>
           <li>Customize this page in <code>src/routes/home.${ext}</code></li>
           <li>Add more routes in the module definition</li>
-          <li>Configure the module in your app's modules.config.ts</li>
+          <li>Configure the module in your app's <code>modules.config.ts</code></li>
         </ul>
       </div>
     </div>
@@ -111,6 +151,64 @@ export default function ${ModuleClassName}HomePage() {
 }
 `;
       fs.writeFileSync(path.join(routesDir, `home.${ext}`), homeRouteContent);
+
+      // Create a dynamic route
+      const detailRouteContent = `import React from 'react';
+import Link from 'next/link';
+
+${useTypeScript ? `interface DetailPageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function ${ModuleClassName}DetailPage({ params }: DetailPageProps) {` : `export default function ${ModuleClassName}DetailPage({ params }) {`}
+  return (
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <Link 
+        href="/${moduleName}"
+        style={{ 
+          color: '#0070f3', 
+          textDecoration: 'none',
+          display: 'inline-block',
+          marginBottom: '1rem'
+        }}
+      >
+        ← Back to {ModuleClassName}
+      </Link>
+      
+      <h1 style={{ marginBottom: '1.5rem', color: '#0070f3' }}>
+        ${ModuleClassName} - Detail View
+      </h1>
+      
+      <div style={{ padding: '1.5rem', backgroundColor: '#f0f9ff', borderRadius: '8px', border: '1px solid #0070f3' }}>
+        <h2 style={{ marginBottom: '1rem', color: '#0070f3' }}>Dynamic Route Parameter</h2>
+        <p style={{ marginBottom: '0.5rem' }}>
+          <strong>ID:</strong> <code style={{ padding: '0.25rem 0.5rem', backgroundColor: '#fff', borderRadius: '4px' }}>{params.id}</code>
+        </p>
+        <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '1rem' }}>
+          This page demonstrates a dynamic route pattern: <code>/[id]</code>
+        </p>
+        <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.5rem' }}>
+          The ID parameter is extracted from the URL and can be used to fetch data, 
+          display specific content, or perform any logic based on the route.
+        </p>
+      </div>
+      
+      <div style={{ marginTop: '2rem' }}>
+        <h3 style={{ marginBottom: '1rem' }}>What you can do here:</h3>
+        <ul style={{ lineHeight: '2' }}>
+          <li>Fetch data based on the ID parameter</li>
+          <li>Display item-specific information</li>
+          <li>Implement CRUD operations</li>
+          <li>Handle loading and error states</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+`;
+      fs.writeFileSync(path.join(routesDir, `detail.${ext}`), detailRouteContent);
     }
 
     // Create API endpoints if selected
@@ -139,6 +237,40 @@ export async function helloHandler(req${useTypeScript ? ': Request' : ''}) {
 }
 `;
       fs.writeFileSync(path.join(apiDir, `hello.${configExt}`), helloApiContent);
+
+      // Create a dynamic API endpoint
+      const itemApiContent = `/**
+ * Item API endpoint - GET /api/${moduleName}/items/[id]
+ * Demonstrates dynamic API routes with path parameters
+ */
+export async function getItemHandler(req${useTypeScript ? ': Request' : ''}, context${useTypeScript ? ': { params: { id: string } }' : ''}) {
+  if (req.method !== 'GET') {
+    return new Response(
+      JSON.stringify({ error: 'Method not allowed' }),
+      { status: 405, headers: { 'Content-Type': 'application/json' } }
+    );
+  }
+
+  const { id } = context.params;
+
+  // Example: Fetch item data (replace with your actual logic)
+  const item = {
+    id,
+    name: \`Item \${id}\`,
+    description: 'This is a sample item from a dynamic route',
+    createdAt: new Date().toISOString(),
+  };
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: item,
+    }),
+    { status: 200, headers: { 'Content-Type': 'application/json' } }
+  );
+}
+`;
+      fs.writeFileSync(path.join(apiDir, `items.${configExt}`), itemApiContent);
     }
 
     // Create middleware if selected
@@ -181,17 +313,27 @@ export async function ${moduleVarName}Middleware(req${useTypeScript ? ': NextReq
 
     if (features.includes('routes')) {
       imports.push(`import ${ModuleClassName}HomePage from './routes/home';`);
+      imports.push(`import ${ModuleClassName}DetailPage from './routes/detail';`);
       routesList.push(`    {
       path: '/',
       component: ${ModuleClassName}HomePage,
+    },`);
+      routesList.push(`    {
+      path: '/[id]',
+      component: ${ModuleClassName}DetailPage,
     },`);
     }
 
     if (features.includes('api')) {
       imports.push(`import { helloHandler } from './server/api/hello';`);
+      imports.push(`import { getItemHandler } from './server/api/items';`);
       apiRoutesList.push(`    {
       path: '/hello',
       handler: helloHandler,
+    },`);
+      apiRoutesList.push(`    {
+      path: '/items/[id]',
+      handler: getItemHandler,
     },`);
     }
 
@@ -205,8 +347,7 @@ export async function ${moduleVarName}Middleware(req${useTypeScript ? ': NextReq
     const configInterface = useTypeScript ? `
 export interface ${ModuleClassName}Config {
   // Add your custom config here
-  // Example:
-  // enableFeature?: boolean;
+  customOption?: string;
 }
 ` : '';
 
@@ -217,13 +358,35 @@ ${imports.join('\n')}
 ${configInterface}
 /**
  * ${ModuleClassName} Module Definition
+ * 
+ * Configure this module in modules.config.ts:
+ * 
+ * import { ${moduleVarName} } from './${confirmPath}/${moduleName}/src';
+ * 
+ * export const modules = [
+ *   // Basic usage with all features enabled by default
+ *   ${moduleVarName},
+ *   
+ *   // Configure base features
+ *   ${moduleVarName}({
+ *     enabled: true,
+ *     features: {
+ *       routes: true,      // Enable/disable page routes
+ *       apiRoutes: true,   // Enable/disable API endpoints
+ *       middleware: true   // Enable/disable middleware
+ *     }
+ *   }),
+ *   
+ *   // Or add custom configuration
+ *   ${moduleVarName}({
+ *     enabled: true,
+ *     customOption: 'your value'
+ *   })
+ * ];
  */
 export const ${moduleVarName} = defineModule${typeAnnotation}({
   name: '${moduleName}',
-  basePath: '/${moduleName}',${useTypeScript ? `
-  config: {
-    // Add default configuration here
-  },` : ''}
+  basePath: '/${moduleName}',
   routes: [
 ${routesList.join('\n')}
   ],
@@ -267,22 +430,48 @@ Add to your \`modules.config.ts\`:
 import { ${moduleVarName} } from './${confirmPath}/${moduleName}/src';
 
 export const modules = [
+  // Basic usage - all features enabled by default
   ${moduleVarName},
   
-  // Or with configuration:
-  // ${moduleVarName}({
-  //   // your config
-  // }),
+  // Control module features:
+  ${moduleVarName}({
+    enabled: true,          // Enable/disable entire module
+    features: {
+      routes: true,         // Enable/disable page routes
+      apiRoutes: true,      // Enable/disable API endpoints
+      middleware: true      // Enable/disable middleware
+    }
+  }),
+  
+  // Disable specific features:
+  ${moduleVarName}({
+    features: {
+      apiRoutes: false      // Disable API routes, keep pages and middleware
+    }
+  }),
 ];
 \`\`\`
 
 ## Routes
 
-${features.includes('routes') ? `- \`/${moduleName}\` - Home page` : 'No routes defined'}
+${features.includes('routes') ? `- \`/${moduleName}\` - Home page
+- \`/${moduleName}/[id]\` - Detail page with dynamic ID parameter` : 'No routes defined'}
 
 ## API Endpoints
 
-${features.includes('api') ? `- \`GET /api/${moduleName}/hello\` - Hello endpoint` : 'No API endpoints defined'}
+${features.includes('api') ? `- \`GET /api/${moduleName}/hello\` - Hello endpoint
+- \`GET /api/${moduleName}/items/[id]\` - Get item by ID (dynamic route)` : 'No API endpoints defined'}
+
+## Configuration
+
+The module supports Next Modular's base configuration:
+
+- \`enabled\` (boolean): Enable/disable the entire module
+- \`features.routes\` (boolean): Enable/disable page routes
+- \`features.apiRoutes\` (boolean): Enable/disable API endpoints
+- \`features.middleware\` (boolean): Enable/disable middleware
+
+You can also add custom configuration by extending the config interface.
 
 ## Development
 
@@ -358,5 +547,5 @@ Edit the files in \`src/\` to customize your module.
   }
 }
 
-module.exports = create;
+export default create;
 
