@@ -1,0 +1,69 @@
+# Configuration
+
+## modules.config.ts
+
+This file lists all active modules in your project:
+
+```ts
+import { authModule } from './modules/auth-module/src';
+import { exampleModule } from './modules/example-module/src';
+
+export const modules = [
+  authModule,
+  exampleModule,
+];
+```
+
+## Module configuration
+
+Since `defineModule()` returns a callable, you can pass configuration inline:
+
+```ts
+export const modules = [
+  authModule({
+    enabled: true,
+    features: {
+      routes: true,
+      apiRoutes: true,
+      middleware: true,
+    },
+  }),
+  exampleModule({ customOption: 'value' }),
+];
+```
+
+## Base configuration
+
+Every module accepts these base options:
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `enabled` | `boolean` | `true` | Enable or disable the entire module |
+| `features.routes` | `boolean` | `true` | Enable/disable page routes |
+| `features.apiRoutes` | `boolean` | `true` | Enable/disable API endpoints |
+| `features.middleware` | `boolean` | `true` | Enable/disable middleware |
+
+When a feature is disabled, requests to those paths return 404 (routes) or 503 (API).
+
+## Runtime initialization
+
+The `next-modular.runtime.ts` file bridges config and runtime:
+
+```ts
+import { configureModules } from 'next-modular';
+import { modules } from './modules.config';
+
+configureModules({ modules });
+
+export { modules };
+```
+
+This file is imported by the catch-all routes to ensure modules are registered before handling requests. `configureModules()` clears the registry and re-registers all modules from the config.
+
+## Accessing module config at runtime
+
+```ts
+import { getModuleConfig } from 'next-modular';
+
+const config = getModuleConfig<MyModuleConfig>('my-module');
+```

@@ -1,0 +1,49 @@
+# Introduction
+
+next-modular is a modular architecture framework for Next.js applications. It lets you organize your app into self-contained modules, each with its own routes, API endpoints, and middleware, that are registered and resolved at runtime through catch-all routes.
+
+## Why next-modular?
+
+- **Self-contained modules** Each module defines its own pages, API handlers, and middleware in one place
+- **Runtime route resolution** A single catch-all route delegates to the correct module based on the URL path
+- **Configurable** Modules can be enabled/disabled and configured per-feature (routes, API, middleware)
+- **CLI tooling** Initialize projects, add registry modules, or scaffold new local modules
+
+## How it works
+
+1. You define modules using `defineModule()`, specifying a `basePath` and registering route components, API handlers, and middleware
+2. In `modules.config.ts`, you list which modules are active
+3. A runtime file (`next-modular.runtime.ts`) calls `configureModules()` to register them in a central registry
+4. Catch-all routes (`app/[...module]/page.tsx` and `app/api/[...module]/route.ts`) import the runtime and delegate incoming requests to the matching module using `handleRoute()` and `handleApiRoute()`
+5. A proxy middleware file handles module-scoped middleware via `handleMiddleware()`
+
+```ts
+// modules.config.ts
+import { exampleModule } from './modules/example-module/src';
+
+export const modules = [
+  exampleModule,
+  // or with config:
+  // exampleModule({ enabled: true, features: { routes: true } }),
+];
+```
+
+```ts
+// modules/example-module/src/index.ts
+import { defineModule } from 'next-modular';
+import HomePage from './routes/home';
+import { helloHandler } from './server/api/hello';
+import { middleware } from './server/middleware';
+
+export const exampleModule = defineModule({
+  name: 'example-module',
+  basePath: '/example-module',
+  routes: [
+    { path: '/', component: HomePage },
+  ],
+  apiRoutes: [
+    { path: '/hello', handler: helloHandler },
+  ],
+  middleware: { handler: middleware },
+});
+```

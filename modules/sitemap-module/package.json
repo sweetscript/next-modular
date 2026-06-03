@@ -1,0 +1,19 @@
+{
+  "name": "@next-modular/sitemap-module",
+  "version": "0.1.0",
+  "main": "./src/index.ts",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "require": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "peerDependencies": {
+    "next-modular": ">=0.0.0",
+    "react": ">=18.0.0",
+    "next": ">=16.0.0"
+  }
+}
