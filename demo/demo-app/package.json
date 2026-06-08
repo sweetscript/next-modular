@@ -10,7 +10,10 @@
   },
   "dependencies": {
     "next": "16.0.0",
-    "next-modular": "^1.0.0",
+    "next-modular": "file:../../",
+    "@next-modular/sitemap-module": "file:../../modules/sitemap-module",
+    "@next-modular/security-module": "file:../../modules/security-module",
+    "@next-modular/content-module": "file:../../modules/content-module",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },

@@ -3,6 +3,10 @@
   "version": "0.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "workspaces": [
+    "modules/*",
+    "demo/demo-app"
+  ],
   "files": [
     "dist",
     "cli",

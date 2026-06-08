@@ -1,0 +1,24 @@
+{
+  "modules": [
+    {
+      "name": "@next-modular/security-module",
+      "slug": "security-module",
+      "description": "Security headers, rate limiting, CORS configuration, and input sanitization.",
+      "version": "0.1.0",
+      "category": "security",
+      "iconUrl": "/icons/security-module.svg",
+      "features": ["security-headers", "rate-limiting", "cors", "helmet"],
+      "author": "official"
+    },
+    {
+      "name": "@next-modular/content-module",
+      "slug": "content-module",
+      "description": "MDX-based content management with frontmatter, collections, and dynamic rendering.",
+      "version": "0.1.0",
+      "category": "content",
+      "iconUrl": "/icons/content-module.svg",
+      "features": ["mdx-rendering", "frontmatter", "collections", "search"],
+      "author": "official"
+    }
+  ]
+}

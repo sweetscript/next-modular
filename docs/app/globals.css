@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Override Nextra dark background to match site */
+.dark {
+  /* --nextra-bg: 15 26 26; */
+}
