@@ -3,7 +3,7 @@ import { moduleRegistry } from 'next-modular';
 import { getContentList } from '../content';
 import type { ContentModuleConfig } from '../index';
 
-export async function ContentListPage({ params }: { params?: Record<string, string> }) {
+export async function ContentListPage({ params: _params }: { params?: Record<string, string> }) {
   const config = moduleRegistry.getModuleConfig<ContentModuleConfig>('content-module');
   const contentDir = config?.contentDir ?? './content';
 

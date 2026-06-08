@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { DEFAULT_CORS } from '../constants';
 import type { CorsConfig } from '../types';
 
 export function applyCors(req: NextRequest, response: NextResponse, config: Required<CorsConfig>): NextResponse | void {
