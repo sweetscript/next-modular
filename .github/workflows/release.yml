@@ -4,6 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/**'
+      - 'cli/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.releaserc.json'
+      - '.github/workflows/release.yml'
 
 permissions:
   contents: write
@@ -22,7 +29,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          persist-credentials: false
       
       - name: Setup Node.js
         uses: actions/setup-node@v4
