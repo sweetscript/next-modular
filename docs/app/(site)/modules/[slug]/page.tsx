@@ -1,9 +1,10 @@
 import fs from "fs";
 import path from "path";
-import Image from "next/image";
 import Link from "next/link";
 import registry from "../../../../data/modules-registry.json";
 import { ModuleReadme } from "./module-readme";
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 interface Module {
   name: string;
@@ -67,8 +68,8 @@ export default async function ModuleDetailPage({
       </Link>
 
       <div className="mt-6 flex items-center gap-4">
-        <Image
-          src={module.iconUrl}
+        <img
+          src={`${basePath}${module.iconUrl}`}
           alt={`${module.name} icon`}
           width={48}
           height={48}

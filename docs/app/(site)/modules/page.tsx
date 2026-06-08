@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import registry from "../../../data/modules-registry.json";
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 interface Module {
   name: string;
@@ -29,8 +30,8 @@ function ModuleCard({ module }: { module: Module }) {
       className="block rounded-lg border border-gray-200 dark:border-neutral-700 p-5 hover:border-teal-500 dark:hover:border-teal-400 transition-colors hover:shadow-md"
     >
       <div className="flex items-start gap-3">
-        <Image
-          src={module.iconUrl}
+        <img
+          src={`${basePath}${module.iconUrl}`}
           alt={`${module.name} icon`}
           width={32}
           height={32}
