@@ -1,112 +1,24 @@
 {
   "modules": [
     {
-      "name": "@next-modular/auth-module",
-      "description": "Complete authentication with login, register, password reset, and session management.",
-      "version": "0.1.0",
-      "category": "authentication",
-      "icon": "🔐",
-      "features": ["login", "register", "password-reset", "oauth", "session-management"],
-      "author": "official"
-    },
-    {
-      "name": "@next-modular/session-module",
-      "description": "Server-side session management with cookie-based storage and Redis support.",
-      "version": "0.1.0",
-      "category": "authentication",
-      "icon": "🍪",
-      "features": ["cookie-sessions", "redis-store", "csrf-protection"],
-      "author": "official"
-    },
-    {
       "name": "@next-modular/security-module",
+      "slug": "security-module",
       "description": "Security headers, rate limiting, CORS configuration, and input sanitization.",
       "version": "0.1.0",
       "category": "security",
-      "icon": "🛡️",
+      "iconUrl": "/icons/security-module.svg",
       "features": ["security-headers", "rate-limiting", "cors", "helmet"],
       "author": "official"
     },
     {
-      "name": "@next-modular/sitemap-module",
-      "description": "Automatic sitemap.xml generation from your app routes and module pages.",
-      "version": "0.1.0",
-      "category": "seo",
-      "icon": "🗺️",
-      "features": ["auto-generation", "custom-entries", "priority-config"],
-      "author": "official"
-    },
-    {
       "name": "@next-modular/content-module",
+      "slug": "content-module",
       "description": "MDX-based content management with frontmatter, collections, and dynamic rendering.",
       "version": "0.1.0",
       "category": "content",
-      "icon": "📝",
+      "iconUrl": "/icons/content-module.svg",
       "features": ["mdx-rendering", "frontmatter", "collections", "search"],
       "author": "official"
-    },
-    {
-      "name": "@next-modular/scalar-module",
-      "description": "Beautiful API documentation with Scalar. Auto-generates OpenAPI docs from your module APIs.",
-      "version": "0.1.0",
-      "category": "devtools",
-      "icon": "📖",
-      "features": ["openapi-generation", "interactive-docs", "try-it"],
-      "author": "official"
-    },
-    {
-      "name": "@next-modular/turnstile-module",
-      "description": "Cloudflare Turnstile integration for bot protection without CAPTCHAs.",
-      "version": "0.1.0",
-      "category": "security",
-      "icon": "🤖",
-      "features": ["invisible-challenge", "server-validation", "react-component"],
-      "author": "official"
-    },
-    {
-      "name": "@next-modular/analytics-module",
-      "description": "Privacy-friendly analytics with support for multiple providers.",
-      "version": "0.1.0",
-      "category": "analytics",
-      "icon": "📊",
-      "features": ["page-views", "custom-events", "multi-provider", "gdpr-compliant"],
-      "author": "community"
-    },
-    {
-      "name": "@next-modular/email-module",
-      "description": "Transactional email with React Email templates and multiple provider support.",
-      "version": "0.1.0",
-      "category": "communication",
-      "icon": "✉️",
-      "features": ["react-email", "templates", "sendgrid", "resend"],
-      "author": "community"
-    },
-    {
-      "name": "@next-modular/payments-module",
-      "description": "Stripe integration with subscriptions, one-time payments, and webhooks.",
-      "version": "0.1.0",
-      "category": "payments",
-      "icon": "💳",
-      "features": ["stripe-checkout", "subscriptions", "webhooks", "customer-portal"],
-      "author": "community"
-    },
-    {
-      "name": "@next-modular/storage-module",
-      "description": "File upload and storage with S3, Cloudflare R2, and local filesystem support.",
-      "version": "0.1.0",
-      "category": "storage",
-      "icon": "📁",
-      "features": ["file-upload", "s3", "r2", "presigned-urls"],
-      "author": "community"
-    },
-    {
-      "name": "@next-modular/i18n-module",
-      "description": "Internationalization with automatic locale detection, routing, and translation management.",
-      "version": "0.1.0",
-      "category": "content",
-      "icon": "🌍",
-      "features": ["locale-detection", "routing", "translations", "pluralization"],
-      "author": "community"
     }
   ]
 }

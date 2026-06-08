@@ -10,9 +10,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-gray-100 dark:border-neutral-800 bg-white/80 dark:bg-[#0f1a1a]/80 backdrop-blur-md">
-      <nav className="flex items-center justify-between px-6 py-4 max-w-6xl mx-auto">
-        <Link href="/">
-          <Logo className="h-7" />
+      <nav className="flex items-center justify-between px-6 py-3 max-w-6xl mx-auto">
+        <Link href="/" className="flex items-center gap-2">
+          <Logo className="h-6" />
+          <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300">
+            Beta
+          </span>
         </Link>
 
         {/* Desktop nav */}

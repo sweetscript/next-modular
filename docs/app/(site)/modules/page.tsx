@@ -1,36 +1,41 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import registry from "../../../data/modules-registry.json";
 
 interface Module {
   name: string;
+  slug: string;
   description: string;
   version: string;
   category: string;
-  icon: string;
+  iconUrl: string;
   features: string[];
   author: string;
 }
 
 const CATEGORIES = [
   { id: "all", label: "All" },
-  { id: "authentication", label: "Authentication" },
   { id: "security", label: "Security" },
-  { id: "seo", label: "SEO" },
   { id: "content", label: "Content" },
-  { id: "devtools", label: "Dev Tools" },
-  { id: "analytics", label: "Analytics" },
-  { id: "communication", label: "Communication" },
-  { id: "payments", label: "Payments" },
-  { id: "storage", label: "Storage" },
 ];
 
 function ModuleCard({ module }: { module: Module }) {
   return (
-    <div className="rounded-lg border border-gray-200 dark:border-neutral-700 p-5 hover:border-teal-500 dark:hover:border-teal-400 transition-colors hover:shadow-md">
+    <Link
+      href={`/modules/${module.slug}`}
+      className="block rounded-lg border border-gray-200 dark:border-neutral-700 p-5 hover:border-teal-500 dark:hover:border-teal-400 transition-colors hover:shadow-md"
+    >
       <div className="flex items-start gap-3">
-        <span className="text-2xl">{module.icon}</span>
+        <Image
+          src={module.iconUrl}
+          alt={`${module.name} icon`}
+          width={32}
+          height={32}
+          className="dark:brightness-300"
+        />
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-sm truncate">{module.name}</h3>
           <span className="inline-block mt-1 text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-400">
@@ -62,7 +67,7 @@ function ModuleCard({ module }: { module: Module }) {
         </span>
         <span>v{module.version}</span>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -93,6 +98,15 @@ export default function ModulesPage() {
       <p className="mt-2 text-gray-600 dark:text-gray-400">
         Discover and install modules to extend your Next.js application.
       </p>
+
+      <div className="mt-4 px-4 py-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 text-sm text-amber-800 dark:text-amber-300 flex items-start gap-2.5">
+        <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <span>This page is a preview of the module registry. Modules listed here are under development and are not yet available for installation. Contributions are welcome.</span>
+      </div>
 
       {/* Search */}
       <div className="mt-8">

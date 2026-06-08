@@ -13,6 +13,7 @@ import {
   WrenchIcon,
   CodeIcon,
 } from "../../components/icons";
+import { HeroCodePreview } from "../../components/hero-code-preview";
 
 export default function Home() {
   return (
@@ -23,6 +24,10 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left - text */}
           <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 text-xs text-amber-800 dark:text-amber-300 mb-5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+              Under development, contributions welcome
+            </div>
             <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">
               Modular architecture
               <br />
@@ -50,38 +55,18 @@ export default function Home() {
 
           {/* Right - code preview */}
           <div className="relative flex items-center justify-center">
-            <div className="w-full bg-neutral-900 rounded-xl overflow-hidden border border-neutral-800 shadow-xl">
-              {/* Window chrome */}
-              <div className="px-4 py-2 bg-neutral-800 flex items-center">
-                <span className="text-[10px] text-gray-500 font-mono">./modules.config.ts</span>
-              </div>
-              {/* Code */}
-              <div className="p-5 text-[12px] font-mono leading-relaxed overflow-x-auto whitespace-nowrap">
-                <p className="text-gray-600">{"// Import published module"}</p>
-                <p><span className="text-purple-400">import</span> <span className="text-gray-300">{"{"} authModule {"}"}</span> <span className="text-purple-400">from</span> <span className="text-green-400">&apos;@next-modular/auth&apos;</span></p>
-                <p className="mt-2 text-gray-600">{"// Import local module"}</p>
-                <p><span className="text-purple-400">import</span> <span className="text-gray-300">{"{"} paymentsModule {"}"}</span> <span className="text-purple-400">from</span> <span className="text-green-400">&apos;./modules/payments&apos;</span></p>
-                <p className="mt-3"><span className="text-purple-400">export const</span> <span className="text-blue-300">modules</span> <span className="text-gray-500">=</span> <span className="text-gray-300">[</span></p>
-                <p className="pl-4"><span className="text-yellow-300">authModule</span><span className="text-gray-500">({"{"}</span></p>
-                <p className="pl-8"><span className="text-gray-400">providers:</span> <span className="text-gray-300">[</span><span className="text-green-400">&apos;google&apos;</span><span className="text-gray-300">]</span></p>
-                <p className="pl-4"><span className="text-gray-500">{"}"})</span><span className="text-gray-500">,</span></p>
-                <p className="pl-4"><span className="text-yellow-300">paymentsModule</span><span className="text-gray-500">,</span></p>
-                <p><span className="text-gray-300">]</span></p>
-                <p className="mt-3 text-gray-600">{"// That's it. Routes, APIs & middleware"}</p>
-                <p className="text-gray-600">{"// are registered automatically."}</p>
-              </div>
-            </div>
+            <HeroCodePreview />
           </div>
         </div>
 
         {/* Terminal */}
         <div className="mt-16 max-w-lg mx-auto text-left">
-          <div className="bg-neutral-900 rounded-lg overflow-hidden border border-neutral-800">
+          <div className="bg-white dark:bg-neutral-900 rounded-lg overflow-hidden border border-gray-200 dark:border-neutral-800">
             <div className="p-5 text-sm font-mono">
-              <p className="text-gray-400">{"# Initialize"}</p>
-              <p className="text-green-400">npx next-modular init</p>
-              <p className="mt-3 text-gray-400">{"# Add a module"}</p>
-              <p className="text-green-400">npx next-modular add @next-modular/auth-module</p>
+              <p className="text-gray-400 dark:text-gray-400">{"# Initialize"}</p>
+              <p className="text-teal-600 dark:text-green-400">npx next-modular init</p>
+              <p className="mt-3 text-gray-400 dark:text-gray-400">{"# Add a module"}</p>
+              <p className="text-teal-600 dark:text-green-400">npx next-modular add @next-modular/auth-module</p>
             </div>
           </div>
         </div>
@@ -281,7 +266,7 @@ export default function Home() {
               <div className="bg-gray-50 dark:bg-neutral-800 px-4 py-2.5 flex items-center border-b border-gray-200 dark:border-neutral-700">
                 <span className="text-xs text-gray-500 font-mono">typical-nextjs-app</span>
               </div>
-              <div className="p-4 bg-white dark:bg-neutral-900 text-[13px] font-mono space-y-1">
+              <div className="p-4 bg-white dark:bg-neutral-900 text-xs font-mono space-y-1">
                 <div className="flex items-center gap-2 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-600 dark:text-gray-300">app/</span></div>
                 <div className="flex items-center gap-2 pl-5 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">login/</span></div>
                 <div className="flex items-center gap-2 pl-9 text-gray-500"><FileIcon className="w-4 h-4" /> page.tsx</div>
@@ -293,8 +278,10 @@ export default function Home() {
                 <div className="flex items-center gap-2 pl-9 text-gray-500"><FileIcon className="w-4 h-4" /> page.tsx</div>
                 <div className="flex items-center gap-2 pl-5 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">api/</span></div>
                 <div className="flex items-center gap-2 pl-10 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">auth/</span></div>
-                <div className="flex items-center gap-2 pl-14 text-gray-500"><FileIcon className="w-4 h-4" /> login/route.ts</div>
-                <div className="flex items-center gap-2 pl-14 text-gray-500"><FileIcon className="w-4 h-4" /> session/route.ts</div>
+                <div className="flex items-center gap-2 pl-14 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">login/</span></div>
+                <div className="flex items-center gap-2 pl-[4.5rem] text-gray-500"><FileIcon className="w-4 h-4" /> route.ts</div>
+                <div className="flex items-center gap-2 pl-14 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">session/</span></div>
+                <div className="flex items-center gap-2 pl-[4.5rem] text-gray-500"><FileIcon className="w-4 h-4" /> route.ts</div>
                 <div className="flex items-center gap-2 pl-10 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">payments/</span></div>
                 <div className="flex items-center gap-2 pl-14 text-gray-500"><FileIcon className="w-4 h-4" /> route.ts</div>
                 <div className="flex items-center gap-2 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">lib/</span></div>
@@ -305,7 +292,13 @@ export default function Home() {
               </div>
             </div>
             <p className="mt-3 text-xs text-red-600 dark:text-red-400 font-medium px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/20">
-              Auth logic spread across 5 directories.
+              Debugging means grepping across the whole project.
+            </p>
+            <p className="mt-2 text-xs text-red-600 dark:text-red-400 font-medium px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/20">
+              A single feature scattered across the entire codebase.
+            </p>
+            <p className="mt-2 text-xs text-red-600 dark:text-red-400 font-medium px-3 py-2 rounded-lg bg-red-50 dark:bg-red-950/20">
+              Hard to maintain what you can&apos;t see in one place.
             </p>
           </div>
 
@@ -315,12 +308,12 @@ export default function Home() {
               <div className="bg-gray-50 dark:bg-neutral-800 px-4 py-2.5 flex items-center border-b border-gray-200 dark:border-neutral-700">
                 <span className="text-xs text-gray-500 font-mono">next-modular-app</span>
               </div>
-              <div className="p-4 bg-white dark:bg-neutral-900 text-[13px] font-mono space-y-1">
+              <div className="p-4 bg-white dark:bg-neutral-900 text-xs font-mono space-y-1">
                 <div className="flex items-center gap-2 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">app/</span></div>
                 <div className="flex items-center gap-2 pl-5 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">dashboard/</span></div>
                 <div className="flex items-center gap-2 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">modules/</span></div>
                 <div className="flex items-center gap-2 pl-5 text-teal-500 font-medium"><PackageIcon className="w-4 h-4" /> auth-module/</div>
-                <div className="flex items-center gap-2 pl-10 text-gray-500"><FileIcon className="w-4 h-4" /> index.ts</div>
+                <div className="flex items-center gap-2 pl-10 text-teal-500"><FileIcon className="w-4 h-4" /> index.ts</div>
                 <div className="flex items-center gap-2 pl-10 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">routes/</span></div>
                 <div className="flex items-center gap-2 pl-14 text-gray-500"><FileIcon className="w-4 h-4" /> login.tsx</div>
                 <div className="flex items-center gap-2 pl-14 text-gray-500"><FileIcon className="w-4 h-4" /> register.tsx</div>
@@ -330,17 +323,23 @@ export default function Home() {
                 <div className="flex items-center gap-2 pl-10 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">lib/</span></div>
                 <div className="flex items-center gap-2 pl-10 text-gray-500"><FileIcon className="w-4 h-4" /> middleware.ts</div>
                 <div className="flex items-center gap-2 pl-5 text-teal-500 font-medium"><PackageIcon className="w-4 h-4" /> payments-module/</div>
-                <div className="flex items-center gap-2 pl-10 text-gray-500"><FileIcon className="w-4 h-4" /> index.ts</div>
+                <div className="flex items-center gap-2 pl-10 text-teal-500"><FileIcon className="w-4 h-4" /> index.ts</div>
                 <div className="flex items-center gap-2 pl-10 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">routes/</span></div>
                 <div className="flex items-center gap-2 pl-14 text-gray-500"><FileIcon className="w-4 h-4" /> checkout.tsx</div>
                 <div className="flex items-center gap-2 pl-10 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">server/api/</span></div>
                 <div className="flex items-center gap-2 pl-14 text-gray-500"><FileIcon className="w-4 h-4" /> webhook.ts</div>
                 <div className="flex items-center gap-2 pl-10 text-amber-500 dark:text-amber-400"><FolderIcon className="w-4 h-4" /> <span className="text-gray-500">lib/</span></div>
-                <div className="flex items-center gap-2 text-gray-500"><FileIcon className="w-4 h-4" /> modules.config.ts</div>
+                <div className="flex items-center gap-2 text-teal-500"><FileIcon className="w-4 h-4" /> modules.config.ts</div>
               </div>
             </div>
             <p className="mt-3 text-xs text-green-600 dark:text-green-400 font-medium px-3 py-2 rounded-lg bg-green-50 dark:bg-green-950/20">
+              Readable at a glance. Debuggable in minutes.
+            </p>
+            <p className="mt-2 text-xs text-green-600 dark:text-green-400 font-medium px-3 py-2 rounded-lg bg-green-50 dark:bg-green-950/20">
               Delete the folder, delete the feature. That simple.
+            </p>
+            <p className="mt-2 text-xs text-green-600 dark:text-green-400 font-medium px-3 py-2 rounded-lg bg-green-50 dark:bg-green-950/20">
+              One folder, full picture. No mental mapping needed.
             </p>
           </div>
         </div>
