@@ -1,5 +1,6 @@
-import type { NextConfig } from "next";
+import { withNextModular } from 'next-modular';
+import { nextModularBuildConfig } from './next-modular.config';
 
-const nextConfig: NextConfig = {};
-
-export default nextConfig;
+export default withNextModular(nextModularBuildConfig)({
+  turbopack: {},
+});

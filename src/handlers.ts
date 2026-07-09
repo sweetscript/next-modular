@@ -84,7 +84,7 @@ export async function handleApiRoute(req: Request, pathname: string, context?: a
 /**
  * Handle middleware - to be called from app middleware
  */
-export async function handleMiddleware(req: NextRequest): Promise<NextResponse | void> {
+export async function handleMiddleware(req: any): Promise<any> {
   // Ensure modules are initialized at runtime
   ensureModulesInitialized();
   

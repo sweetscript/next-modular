@@ -5,7 +5,8 @@
   "types": "./dist/index.d.ts",
   "workspaces": [
     "modules/*",
-    "demo/demo-app"
+    "demo/demo-app",
+    "demo/demo-edge-app"
   ],
   "files": [
     "dist",
@@ -26,6 +27,11 @@
       "types": "./dist/config.d.ts",
       "require": "./dist/config.js",
       "import": "./dist/config.js"
+    },
+    "./edge": {
+      "types": "./dist/edge.d.ts",
+      "require": "./dist/edge.js",
+      "import": "./dist/edge.js"
     }
   },
   "scripts": {

@@ -1,10 +1,8 @@
-import { handleRoute, getAllModuleStaticParams } from 'next-modular';
-import { notFound } from 'next/navigation';
-import '../../next-modular.runtime'; // Initialize modules
+export const runtime = 'edge';
 
-export async function generateStaticParams() {
-  return getAllModuleStaticParams();
-}
+import { handleRouteWith } from 'next-modular/edge';
+import { notFound } from 'next/navigation';
+import { modules } from '../../modules.config';
 
 export default async function ModulePage({
   params,
@@ -14,7 +12,7 @@ export default async function ModulePage({
   const { module } = await params;
   const pathname = '/' + module.join('/');
 
-  const result = await handleRoute(pathname);
+  const result = await handleRouteWith(modules, pathname);
 
   if (!result) {
     notFound();

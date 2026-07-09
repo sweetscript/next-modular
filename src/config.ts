@@ -1,5 +1,7 @@
 import { NextModularConfig } from './types';
 import { moduleRegistry } from './registry';
+import { mergeModuleConfigs } from './configMerge';
+import type { NextConfig } from 'next';
 
 // Store the configuration for runtime initialization
 let runtimeConfig: NextModularConfig | null = null;
@@ -39,17 +41,19 @@ export function ensureModulesInitialized() {
 }
 
 /**
- * Create a Next.js config plugin for Next Modular
+ * Create a Next.js config plugin for Next Modular.
+ * Registers modules and merges all module nextConfig declarations
+ * (headers, redirects, rewrites, webpack) into the returned Next.js config.
  */
 export function withNextModular(config: NextModularConfig) {
-  return (nextConfig: any = {}) => {
+  return (nextConfig: NextConfig = {}): NextConfig => {
     // Initialize modules
     configureModules(config);
 
-    return {
-      ...nextConfig,
-      // You can add Next.js config modifications here if needed
-    };
+    const modules = moduleRegistry.getAllModules();
+
+    // Merge module nextConfig contributions with user's config
+    return mergeModuleConfigs(modules, nextConfig);
   };
 }
 
