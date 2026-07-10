@@ -1,0 +1,109 @@
+# Next.js Config Extension
+
+Modules can contribute to your Next.js config — headers, redirects, rewrites, and webpack — by declaring a `nextConfig` property. `withNextModular` merges all module configs together automatically.
+
+## Setup
+
+Use `withNextModular` in `next.config.ts` and pass a build-time config that contains only your module `nextConfig` declarations:
+
+```ts
+// next.config.ts
+import { withNextModular } from 'next-modular';
+import { nextModularBuildConfig } from './next-modular.config';
+
+export default withNextModular(nextModularBuildConfig)({
+  // your existing Next.js config
+});
+```
+
+Create a separate `next-modular.config.ts` for build-time config. This file must not import React components, since Next.js loads it in a plain Node.js context during `next build`:
+
+```ts
+// next-modular.config.ts
+import type { ModuleDefinition } from 'next-modular';
+import { myModule } from './modules/my-module/src';
+
+function buildOnly(module: ModuleDefinition): ModuleDefinition {
+  return {
+    name: module.name,
+    basePath: module.basePath,
+    nextConfig: module.nextConfig,
+  };
+}
+
+export const nextModularBuildConfig = {
+  modules: [buildOnly(myModule)],
+};
+```
+
+## Declaring nextConfig in a module
+
+```ts
+import { defineModule } from 'next-modular';
+
+export const myModule = defineModule({
+  name: 'my-module',
+  basePath: '/my-module',
+
+  nextConfig: {
+    headers: async () => [
+      {
+        source: '/my-module/:path*',
+        headers: [{ key: 'X-My-Module', value: 'true' }],
+      },
+    ],
+
+    redirects: async () => [
+      {
+        source: '/old-path',
+        destination: '/my-module',
+        permanent: true,
+      },
+    ],
+
+    rewrites: async () => ({
+      beforeFiles: [
+        { source: '/alias', destination: '/my-module' },
+      ],
+    }),
+
+    webpack: (config) => {
+      // modify webpack config
+      return config;
+    },
+  },
+});
+```
+
+## Merge behaviour
+
+| Property | Strategy |
+|----------|----------|
+| `headers` | Module arrays concatenated first, then user's |
+| `redirects` | Module arrays concatenated first, then user's |
+| `rewrites` | `beforeFiles`, `afterFiles`, `fallback` merged separately |
+| `webpack` | Modules run in order, user's function runs last |
+
+User config always takes precedence — it runs after all module configs.
+
+## Rewrites shape
+
+You can return either an array (treated as `afterFiles`) or the full object:
+
+```ts
+// array form
+rewrites: async () => [
+  { source: '/alias', destination: '/my-module' },
+]
+
+// object form
+rewrites: async () => ({
+  beforeFiles: [...],
+  afterFiles: [...],
+  fallback: [...],
+})
+```
+
+## TypeScript
+
+`nextConfig` is typed against `NextConfig` from Next.js, so you get full autocompletion and type checking on all properties.

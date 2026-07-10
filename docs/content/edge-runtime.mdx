@@ -1,0 +1,97 @@
+# Edge Runtime
+
+next-modular provides a `next-modular/edge` entry point with stateless handlers that have no Node.js dependencies. Use this when you want your module routes to run on Edge Runtime.
+
+## How it works
+
+The default handlers (`handleRoute`, `handleApiRoute`, `handleMiddleware`) rely on a global module registry. Edge Runtime doesn't guarantee persistent global state across requests, so next-modular provides stateless variants that accept modules directly instead:
+
+| Standard (Node.js) | Edge-compatible |
+|-------------------|-----------------|
+| `handleRoute` | `handleRouteWith` |
+| `handleApiRoute` | `handleApiRouteWith` |
+| `handleMiddleware` | `handleMiddlewareWith` |
+
+## Setting up an edge-compatible app
+
+Create your catch-all routes with `export const runtime = 'edge'` and import from `next-modular/edge`:
+
+```ts
+// app/api/[...module]/route.ts
+export const runtime = 'edge';
+
+import { handleApiRouteWith } from 'next-modular/edge';
+import { modules } from '../../modules.config';
+
+async function handle(req: Request, context: { params: Promise<{ module: string[] }> }) {
+  const params = await context.params;
+  const pathname = '/api/' + params.module.join('/');
+  return handleApiRouteWith(modules, req, pathname, { params });
+}
+
+export const GET = handle;
+export const POST = handle;
+export const PUT = handle;
+export const DELETE = handle;
+```
+
+```tsx
+// app/[...module]/page.tsx
+export const runtime = 'edge';
+
+import { handleRouteWith } from 'next-modular/edge';
+import { notFound } from 'next/navigation';
+import { modules } from '../../modules.config';
+
+export default async function ModulePage({ params }) {
+  const { module } = await params;
+  const pathname = '/' + module.join('/');
+  const result = await handleRouteWith(modules, pathname);
+  if (!result) notFound();
+  const { component: Component, params: routeParams } = result;
+  return <Component params={routeParams} />;
+}
+```
+
+Note: `proxy.ts` (middleware) always runs on edge runtime by default in Next.js — no `runtime` declaration needed there.
+
+```ts
+// proxy.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { handleMiddlewareWith } from 'next-modular/edge';
+import { modules } from './modules.config';
+
+export async function proxy(req: NextRequest) {
+  const result = await handleMiddlewareWith(modules, req);
+  if (result) return result;
+  return NextResponse.next();
+}
+```
+
+## Writing edge-compatible module handlers
+
+Module handlers are edge-compatible as long as they only use Web APIs:
+
+```ts
+// ✅ Edge-compatible — uses only Request/Response
+export async function pingHandler(): Promise<Response> {
+  return Response.json({ pong: true });
+}
+
+// ✅ Edge-compatible — uses only Headers Web API
+export async function headersHandler(req: Request): Promise<Response> {
+  const headers: Record<string, string> = {};
+  req.headers.forEach((value, key) => { headers[key] = value; });
+  return Response.json(headers);
+}
+
+// ❌ Not edge-compatible — uses Node.js fs
+export async function contentHandler(req: Request): Promise<Response> {
+  const file = await fs.readFile('./content/hello.mdx', 'utf-8'); // will fail on edge
+  return new Response(file);
+}
+```
+
+## Constraint: all-or-nothing
+
+`export const runtime = 'edge'` applies to an entire Next.js route file. This means all modules handled by that route must be edge-compatible — no Node.js APIs (`fs`, `path`, `crypto`, etc.). If any module uses Node.js, keep the default Node.js runtime instead.
