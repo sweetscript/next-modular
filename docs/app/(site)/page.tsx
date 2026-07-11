@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   title: "Modular architecture for Next.js",
 };
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export default function Home() {
   return (
     <>
@@ -40,7 +42,7 @@ export default function Home() {
               {/* <span className="text-teal-600">for Next.js</span> */}
               <span className="inline-flex gap-2.5 items-center">
                 <span>for </span>
-                <Image src="/next.svg" alt="Next.js" width={80} height={16} className="h-9 w-auto inline-flex" />
+                <Image src={`${basePath}/next.svg`} alt="Next.js" width={80} height={16} className="h-9 w-auto inline-flex" />
                 </span>
             </h1>
             <p className="mt-5 text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
@@ -63,8 +65,8 @@ export default function Home() {
             </div>
             <a href="#inspired-by" className="mt-8 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors group">
               <span>Inspired by</span>
-              <Image src="/nuxt-logo.svg" alt="Nuxt" width={80} height={16} className="h-4 w-auto opacity-70 group-hover:opacity-100 transition-opacity" />
-              <Image src="/nestjs-logo.svg" alt="NestJS" width={80} height={16} className="h-4 w-auto opacity-70 group-hover:opacity-100 transition-opacity" />
+              <Image src={`${basePath}/nuxt-logo.svg`} alt="Nuxt" width={80} height={16} className="h-4 w-auto opacity-70 group-hover:opacity-100 transition-opacity" />
+              <Image src={`${basePath}/nestjs-logo.svg`} alt="NestJS" width={80} height={16} className="h-4 w-auto opacity-70 group-hover:opacity-100 transition-opacity" />
             </a>
           </div>
 
@@ -449,14 +451,14 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Nuxt card */}
             <div className="rounded-2xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 flex flex-col justify-between gap-6">
-              <Image src="/nuxt-logo.svg" alt="Nuxt" width={110} height={32} className="h-8 w-auto" />
+              <Image src={`${basePath}/nuxt-logo.svg`} alt="Nuxt" width={110} height={32} className="h-8 w-auto" />
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                 Nuxt&apos;s module system lets you drop features into a Vue app with a single line of config. Self-contained, composable, and reusable across projects.
               </p>
             </div>
             {/* NestJS card */}
             <div className="rounded-2xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 flex flex-col justify-between gap-6">
-              <Image src="/nestjs-logo.svg" alt="NestJS" width={110} height={32} className="h-8 w-auto" />
+              <Image src={`${basePath}/nestjs-logo.svg`} alt="NestJS" width={110} height={32} className="h-8 w-auto" />
               <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                 NestJS enforces clean feature boundaries through explicit module imports and providers. A pattern that keeps large codebases maintainable.
               </p>
