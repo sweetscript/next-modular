@@ -36,6 +36,7 @@
   },
   "scripts": {
     "build": "tsc",
+    "build:modules": "npm run build -w modules/content-module -w modules/security-module",
     "dev": "tsc --watch",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",

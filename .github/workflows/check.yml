@@ -51,8 +51,8 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
-      - name: Build next-modular package
-        run: npm run build
+      - name: Build packages
+        run: npm run build && npm run build:modules
 
       - name: Install demo app dependencies
         run: npm ci
@@ -96,8 +96,8 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
-      - name: Build next-modular package
-        run: npm run build
+      - name: Build packages
+        run: npm run build && npm run build:modules
 
       - name: Install edge demo app dependencies
         run: npm ci
