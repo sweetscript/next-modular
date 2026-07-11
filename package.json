@@ -6,7 +6,8 @@
   "workspaces": [
     "modules/*",
     "demo/demo-app",
-    "demo/demo-edge-app"
+    "demo/demo-edge-app",
+    "demo/security-demo"
   ],
   "files": [
     "dist",
