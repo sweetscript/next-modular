@@ -14,8 +14,12 @@
     "README.md",
     "LICENSE"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sweetscript/next-modular"
+  },
   "bin": {
-    "next-modular": "./cli/index.mjs"
+    "next-modular": "./cli/index.js"
   },
   "exports": {
     ".": {
