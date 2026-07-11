@@ -3,6 +3,11 @@
   "version": "0.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "workspaces": [
+    "modules/*",
+    "demo/demo-app",
+    "demo/demo-edge-app"
+  ],
   "files": [
     "dist",
     "cli",
@@ -22,10 +27,16 @@
       "types": "./dist/config.d.ts",
       "require": "./dist/config.js",
       "import": "./dist/config.js"
+    },
+    "./edge": {
+      "types": "./dist/edge.d.ts",
+      "require": "./dist/edge.js",
+      "import": "./dist/edge.js"
     }
   },
   "scripts": {
     "build": "tsc",
+    "build:modules": "npm run build -w modules/content-module -w modules/security-module",
     "dev": "tsc --watch",
     "lint": "eslint . --ext .js,.ts",
     "lint:fix": "eslint . --ext .js,.ts --fix",
@@ -41,20 +52,22 @@
   },
   "dependencies": {
     "chalk": "^5.6.2",
-    "commander": "^14.0.2",
-    "inquirer": "^12.10.0",
-    "ora": "^9.0.0"
+    "commander": "^15.0.0",
+    "inquirer": "^14.0.2",
+    "ora": "^9.4.1"
   },
   "devDependencies": {
+    "@emnapi/core": "1.11.2",
+    "@emnapi/runtime": "1.11.2",
     "@eslint/js": "^9.38.0",
-    "@types/node": "^20",
+    "@types/node": "^26",
     "@types/react": "^19",
-    "@vitest/coverage-v8": "^4.0.3",
-    "@vitest/ui": "^4.0.3",
+    "@vitest/coverage-v8": "^4.1.10",
+    "@vitest/ui": "^4.1.10",
     "eslint": "^9.38.0",
-    "semantic-release": "^24.2.9",
+    "semantic-release": "^25.0.6",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.46.2",
-    "vitest": "^4.0.3"
+    "typescript-eslint": "^8.63.0",
+    "vitest": "^4.1.10"
   }
 }

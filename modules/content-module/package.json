@@ -1,0 +1,32 @@
+{
+  "name": "@next-modular/content-module",
+  "version": "0.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "peerDependencies": {
+    "next-modular": "*",
+    "next": ">=16.0.0",
+    "react": ">=18.0.0"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "@mdx-js/mdx": "^3.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "@types/node": "^20",
+    "@types/react": "^19"
+  }
+}

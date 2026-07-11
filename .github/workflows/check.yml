@@ -33,3 +33,93 @@ jobs:
       - name: Run build
         run: npm run build
 
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+    needs: check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build && npm run build:modules
+
+      - name: Install demo app dependencies
+        run: npm ci
+        working-directory: demo/demo-app
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: demo/demo-app
+
+      - name: Build demo app
+        run: npm run build
+        working-directory: demo/demo-app
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+        working-directory: demo/demo-app
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: demo/demo-app/playwright-report/
+          retention-days: 7
+
+  e2e-edge:
+    name: E2E Tests (Edge)
+    runs-on: ubuntu-latest
+    needs: check
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build && npm run build:modules
+
+      - name: Install edge demo app dependencies
+        run: npm ci
+        working-directory: demo/demo-edge-app
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: demo/demo-edge-app
+
+      - name: Build edge demo app
+        run: npm run build
+        working-directory: demo/demo-edge-app
+
+      - name: Run edge E2E tests
+        run: npm run test:e2e
+        working-directory: demo/demo-edge-app
+
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report-edge
+          path: demo/demo-edge-app/playwright-report/
+          retention-days: 7
+

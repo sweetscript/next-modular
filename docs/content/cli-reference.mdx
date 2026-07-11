@@ -1,0 +1,40 @@
+# CLI Reference
+
+## next-modular init
+
+Initialize next-modular in an existing Next.js App Router project.
+
+```bash
+npx next-modular init
+```
+
+Creates catch-all routes, middleware proxy, modules config, runtime file, and a `modules/` directory. Detects your package manager and installs `next-modular` automatically.
+
+Options:
+- `--yes` / `-y` Non-interactive mode, installs all features
+- `--directory` / `-d` Target directory (defaults to current)
+
+## next-modular add
+
+Add a module from the registry to your project.
+
+```bash
+npx next-modular add
+```
+
+Shows an interactive list of available modules from the registry. Installs the npm package and provides instructions for registering it in `modules.config.ts`.
+
+## next-modular create
+
+Scaffold a new local module with boilerplate.
+
+```bash
+npx next-modular create my-module
+```
+
+Creates `modules/my-module/` with:
+- `src/index.ts` Module definition with `defineModule()`
+- `src/routes/` Example page components
+- `src/server/api/` Example API handlers
+- `src/server/middleware.ts` Example middleware
+- `package.json` and `README.md`

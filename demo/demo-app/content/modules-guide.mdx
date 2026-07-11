@@ -1,0 +1,41 @@
+---
+title: Working with Modules
+description: A guide on how to create and use modules in next-modular.
+date: 2025-02-01
+tags: [guide, modules]
+---
+
+# Working with Modules
+
+Modules in next-modular are self-contained features that include routes, API endpoints, and middleware.
+
+## Creating a Module
+
+```ts
+import { defineModule } from 'next-modular';
+
+export const myModule = defineModule({
+  name: 'my-module',
+  basePath: '/my-module',
+  routes: [
+    { path: '/', component: HomePage },
+  ],
+  apiRoutes: [
+    { path: '/hello', handler: helloHandler },
+  ],
+});
+```
+
+## Registering Modules
+
+Add your module to `modules.config.ts`:
+
+```ts
+import { myModule } from './modules/my-module/src';
+
+export const modules = [
+  myModule,
+];
+```
+
+That's it. The module's routes and APIs are now active.

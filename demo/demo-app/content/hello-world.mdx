@@ -1,0 +1,29 @@
+---
+title: Hello World
+description: Your first content page using next-modular content module.
+date: 2025-01-15
+tags: [getting-started, tutorial]
+---
+
+# Hello World
+
+This is a sample content page rendered by the **content-module**.
+
+## How it works
+
+The content module reads `.mdx` files from your content directory, parses frontmatter, and renders them at runtime using `@mdx-js/mdx`.
+
+## Features
+
+- Frontmatter parsing
+- Runtime MDX compilation
+- Server-side rendering
+- Configurable content directory
+
+```ts
+import { contentModule } from '@next-modular/content-module';
+
+contentModule({
+  contentDir: './content',
+})
+```

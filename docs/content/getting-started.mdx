@@ -1,0 +1,54 @@
+# Getting Started
+
+## Installation
+
+```bash
+npm install next-modular
+```
+
+## Initialize your project
+
+Run the init command in your Next.js App Router project:
+
+```bash
+npx next-modular init
+```
+
+This creates the following files:
+
+- `app/[...module]/page.tsx` Catch-all route that delegates to module page components via `handleRoute()`
+- `app/api/[...module]/route.ts` Catch-all API route that delegates to module handlers via `handleApiRoute()`
+- `proxy.ts` Middleware file that runs module middleware via `handleMiddleware()`
+- `modules.config.ts` Where you list your active modules
+- `next-modular.runtime.ts` Calls `configureModules()` to register modules at runtime
+- `modules/` Directory for local modules
+
+## Add a module from the registry
+
+```bash
+npx next-modular add
+```
+
+This shows available modules from the registry and installs the selected one.
+
+## Create a local module
+
+```bash
+npx next-modular create my-module
+```
+
+This scaffolds a new module in `modules/my-module/` with routes, API handlers, and middleware boilerplate.
+
+## Register your module
+
+Add it to `modules.config.ts`:
+
+```ts
+import { myModule } from './modules/my-module/src';
+
+export const modules = [
+  myModule,
+];
+```
+
+The runtime file imports this config and registers all modules. The catch-all routes then resolve incoming requests to the correct module based on the URL path and the module's `basePath`.

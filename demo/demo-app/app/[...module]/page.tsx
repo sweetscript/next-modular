@@ -1,6 +1,10 @@
-import { handleRoute } from 'next-modular';
+import { handleRoute, getAllModuleStaticParams } from 'next-modular';
 import { notFound } from 'next/navigation';
 import '../../next-modular.runtime'; // Initialize modules
+
+export async function generateStaticParams() {
+  return getAllModuleStaticParams();
+}
 
 export default async function ModulePage({
   params,

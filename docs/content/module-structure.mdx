@@ -1,0 +1,99 @@
+# Module Structure
+
+Every next-modular module follows this structure:
+
+```
+my-module/
+├── src/
+│   ├── index.ts              # Module definition (defineModule)
+│   ├── routes/
+│   │   ├── home.tsx          # Page components
+│   │   └── detail.tsx
+│   └── server/
+│       ├── api/
+│       │   └── hello.ts      # API route handlers
+│       └── middleware.ts     # Module middleware
+├── package.json
+└── README.md
+```
+
+## Module definition
+
+The entry point uses `defineModule()` to declare the module's name, base path, and register its routes, API handlers, and middleware:
+
+```ts
+import { defineModule } from 'next-modular';
+import HomePage from './routes/home';
+import DetailPage from './routes/detail';
+import { helloHandler } from './server/api/hello';
+import { myMiddleware } from './server/middleware';
+
+export interface MyModuleConfig {
+  customOption?: string;
+}
+
+export const myModule = defineModule<MyModuleConfig>({
+  name: 'my-module',
+  basePath: '/my-module',
+  routes: [
+    { path: '/', component: HomePage },
+    { path: '/[id]', component: DetailPage },
+  ],
+  apiRoutes: [
+    { path: '/hello', handler: helloHandler },
+  ],
+  middleware: {
+    handler: myMiddleware,
+  },
+});
+```
+
+The returned module is callable. You can pass configuration when registering it:
+
+```ts
+myModule({ enabled: true, customOption: 'value' })
+```
+
+## Route components
+
+Route components receive a `params` object with any dynamic segments matched from the URL:
+
+```tsx
+export default function DetailPage({ params }: { params: Record<string, string> }) {
+  return <div>Item: {params.id}</div>;
+}
+```
+
+## API handlers
+
+API handlers receive the raw `Request` and a context object with params:
+
+```ts
+export async function helloHandler(req: Request, context: any): Promise<Response> {
+  return new Response(JSON.stringify({ message: 'Hello' }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+```
+
+## Middleware
+
+Module middleware runs for any request matching the module's `basePath` (or `/api/basePath`):
+
+```ts
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function myMiddleware(req: NextRequest) {
+  // Return NextResponse to short-circuit, or void/undefined to continue
+  return NextResponse.next();
+}
+```
+
+## Path matching
+
+Routes support:
+- Static paths: `/hello`
+- Dynamic segments: `/[id]`
+- Catch-all routes: `/[...slug]`
+
+The route matcher resolves the URL relative to the module's `basePath`. For example, a module with `basePath: '/blog'` and route `path: '/[slug]'` matches `/blog/my-post`.

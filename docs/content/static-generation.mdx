@@ -1,0 +1,92 @@
+# Static Generation
+
+Modules can declare `staticParams` to pre-render their pages at build time via Next.js `generateStaticParams`.
+
+## How it works
+
+1. You declare `staticParams` on your module — an async function that returns the paths to pre-render
+2. The catch-all `app/[...module]/page.tsx` exports `generateStaticParams` using the `getAllModuleStaticParams` helper
+3. During `next build`, Next.js calls `generateStaticParams`, collects all module paths, and statically renders each one
+
+## Declaring staticParams in a module
+
+Paths are relative to the module's `basePath`:
+
+```ts
+import { defineModule } from 'next-modular';
+
+export const blogModule = defineModule({
+  name: 'blog-module',
+  basePath: '/blog',
+
+  staticParams: async () => [
+    { path: '/' },                  // renders /blog
+    { path: '/hello-world' },       // renders /blog/hello-world
+    { path: '/nested/deep-post' },  // renders /blog/nested/deep-post
+  ],
+
+  routes: [
+    { path: '/', component: BlogListPage },
+    { path: '/[...slug]', component: BlogPostPage },
+  ],
+});
+```
+
+For file-based content, scan the files and return their paths:
+
+```ts
+staticParams: async () => {
+  const files = await fs.readdir('./content');
+  return files
+    .filter(f => f.endsWith('.mdx'))
+    .map(f => ({ path: `/${f.replace(/\.mdx$/, '')}` }));
+},
+```
+
+## Wiring up the catch-all page
+
+Export `generateStaticParams` from your catch-all page:
+
+```ts
+// app/[...module]/page.tsx
+import { handleRoute, getAllModuleStaticParams } from 'next-modular';
+import '../../next-modular.runtime';
+
+export async function generateStaticParams() {
+  return getAllModuleStaticParams();
+}
+
+export default async function ModulePage({ params }) {
+  const { module } = await params;
+  const pathname = '/' + module.join('/');
+  const result = await handleRoute(pathname);
+  if (!result) notFound();
+  const { component: Component, params: routeParams } = result;
+  return <Component params={routeParams} />;
+}
+```
+
+## Path format
+
+`staticParams` paths are relative to the module's `basePath`. The core prefixes them automatically:
+
+| basePath | path | Rendered URL |
+|----------|------|-------------|
+| `/blog` | `/` | `/blog` |
+| `/blog` | `/hello-world` | `/blog/hello-world` |
+| `/blog` | `/nested/deep` | `/blog/nested/deep` |
+
+## Disabled modules
+
+Modules with `config.enabled: false` are skipped by `getAllModuleStaticParams`.
+
+## Build output
+
+After `next build`, pre-rendered module pages appear in the route table as `●` (SSG):
+
+```
+● /[...module]
+  ├ /blog
+  ├ /blog/hello-world
+  └ /blog/nested/deep
+```
