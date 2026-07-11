@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import type { Metadata } from "next";
 import {
   FolderIcon,
   FileIcon,
@@ -15,6 +17,10 @@ import {
 } from "../../components/icons";
 import { HeroCodePreview } from "../../components/hero-code-preview";
 
+export const metadata: Metadata = {
+  title: "Modular architecture for Next.js",
+};
+
 export default function Home() {
   return (
     <>
@@ -28,14 +34,18 @@ export default function Home() {
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
               Under development, contributions welcome
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">
-              Modular architecture
+            <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.1]">
+              <span className="text-teal-600">Modular architecture</span>
               <br />
-              <span className="text-teal-600">for Next.js</span>
+              {/* <span className="text-teal-600">for Next.js</span> */}
+              <span className="inline-flex gap-2.5 items-center">
+                <span>for </span>
+                <Image src="/next.svg" alt="Next.js" width={80} height={16} className="h-9 w-auto inline-flex" />
+                </span>
             </h1>
             <p className="mt-5 text-gray-600 dark:text-gray-400 text-lg leading-relaxed">
               Build scalable Next.js applications with plug-and-play modules.
-              Add authentication, payments, CMS, and more with a single command.
+              Each one owns its routes, API, and middleware. Build once, reuse anywhere.
             </p>
             <div className="mt-8 flex gap-3">
               <Link
@@ -51,6 +61,11 @@ export default function Home() {
                 Browse Modules
               </Link>
             </div>
+            <a href="#inspired-by" className="mt-8 flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors group">
+              <span>Inspired by</span>
+              <Image src="/nuxt-logo.svg" alt="Nuxt" width={80} height={16} className="h-4 w-auto opacity-70 group-hover:opacity-100 transition-opacity" />
+              <Image src="/nestjs-logo.svg" alt="NestJS" width={80} height={16} className="h-4 w-auto opacity-70 group-hover:opacity-100 transition-opacity" />
+            </a>
           </div>
 
           {/* Right - code preview */}
@@ -424,6 +439,35 @@ export default function Home() {
             <h3 className="mt-4 font-semibold">TypeScript Native</h3>
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Full type safety for module definitions, configs, and handlers. Autocomplete everywhere.</p>
           </div>
+        </div>
+      </section>
+
+      {/* Inspired by */}
+      <section id="inspired-by" className="border-t border-gray-100 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900/50">
+        <div className="max-w-5xl mx-auto px-6 py-20">
+          <p className="text-center text-sm text-gray-400 dark:text-gray-500 uppercase tracking-widest font-medium mb-12">Inspired by</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Nuxt card */}
+            <div className="rounded-2xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 flex flex-col justify-between gap-6">
+              <Image src="/nuxt-logo.svg" alt="Nuxt" width={110} height={32} className="h-8 w-auto" />
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                Nuxt&apos;s module system lets you drop features into a Vue app with a single line of config. Self-contained, composable, and reusable across projects.
+              </p>
+            </div>
+            {/* NestJS card */}
+            <div className="rounded-2xl border border-gray-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 p-8 flex flex-col justify-between gap-6">
+              <Image src="/nestjs-logo.svg" alt="NestJS" width={110} height={32} className="h-8 w-auto" />
+              <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                NestJS enforces clean feature boundaries through explicit module imports and providers. A pattern that keeps large codebases maintainable.
+              </p>
+            </div>
+          </div>
+          <blockquote className="mt-10 text-center max-w-xl mx-auto">
+            <p className="text-gray-500 dark:text-gray-400 text-base italic leading-relaxed">
+              &ldquo;The art of programming is the art of organizing complexity.&rdquo;
+            </p>
+            <footer className="mt-2 text-sm text-gray-400 dark:text-gray-500">Edsger W. Dijkstra</footer>
+          </blockquote>
         </div>
       </section>
     </>

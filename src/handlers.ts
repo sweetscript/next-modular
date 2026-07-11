@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { matchRoute, matchApiRoute } from './routeMatcher';
 import { moduleRegistry } from './registry';
 import { ensureModulesInitialized } from './config';
@@ -84,7 +83,7 @@ export async function handleApiRoute(req: Request, pathname: string, context?: a
 /**
  * Handle middleware - to be called from app middleware
  */
-export async function handleMiddleware(req: NextRequest): Promise<NextResponse | void> {
+export async function handleMiddleware(req: any): Promise<any> {
   // Ensure modules are initialized at runtime
   ensureModulesInitialized();
   

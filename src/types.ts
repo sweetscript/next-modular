@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextConfig } from 'next';
 
 export interface ModuleRoute {
   path: string;
@@ -11,7 +11,10 @@ export interface ModuleApiRoute {
 }
 
 export interface ModuleMiddleware {
-  handler: (req: NextRequest) => Promise<NextResponse | void> | NextResponse | void;
+  // Typed as `any` for the request to avoid NextRequest version conflicts
+  // in monorepo setups where next-modular and the app may resolve different
+  // versions of next. The proxy always passes a real NextRequest at runtime.
+  handler: (req: any) => Promise<any> | any;
 }
 
 /**
@@ -26,12 +29,25 @@ export interface BaseModuleConfig {
   };
 }
 
+/**
+ * Next.js config contributions a module can declare.
+ * Merged by withNextModular into the final next.config.
+ */
+export interface ModuleNextConfig {
+  headers?: NonNullable<NextConfig['headers']>;
+  redirects?: NonNullable<NextConfig['redirects']>;
+  rewrites?: NonNullable<NextConfig['rewrites']>;
+  webpack?: NonNullable<NextConfig['webpack']>;
+}
+
 export interface ModuleDefinition<TConfig = any> {
   name: string;
   basePath: string;
   routes?: ModuleRoute[];
   apiRoutes?: ModuleApiRoute[];
   middleware?: ModuleMiddleware;
+  nextConfig?: ModuleNextConfig;
+  staticParams?: () => Promise<Array<{ path: string }>>;
   config?: BaseModuleConfig & TConfig;
   _configurable?: boolean;
   _configure?: (config?: TConfig) => ModuleDefinition<TConfig>;

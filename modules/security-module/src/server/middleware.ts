@@ -1,42 +1,81 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getModuleConfig } from 'next-modular';
-import { DEFAULT_RATE_LIMIT, DEFAULT_CORS } from '../constants';
-import { getClientIp } from '../utils/get-client-ip';
-import { checkRateLimit } from '../utils/rate-limit-store';
-import { applySecurityHeaders } from '../utils/headers';
-import { applyCors } from '../utils/cors';
+import {
+  applyHeaders,
+  applyRateLimit,
+  applyCors,
+  applyCsrf,
+  applyMethodRestricter,
+  applyRequestSize,
+  applyXssValidation,
+} from '../middleware';
+import { generateNonce } from '../utils';
 import type { SecurityModuleConfig } from '../types';
 
 export async function securityMiddleware(req: NextRequest): Promise<NextResponse | void> {
   const config = getModuleConfig<SecurityModuleConfig>('security-module') ?? {};
 
-  const rateLimitConfig = { ...DEFAULT_RATE_LIMIT, ...config.rateLimit };
-  const corsConfig = { ...DEFAULT_CORS, ...config.cors };
-
-  // Rate limiting
-  if (rateLimitConfig.enabled) {
-    const ip = getClientIp(req);
-    const allowed = checkRateLimit(ip, rateLimitConfig);
-
-    if (!allowed) {
-      return new NextResponse(
-        JSON.stringify({ error: 'Too many requests' }),
-        {
-          status: 429,
-          headers: { 'Content-Type': 'application/json', 'Retry-After': String(rateLimitConfig.window) },
-        }
-      );
-    }
+  // Method restricter (early reject)
+  if (config.methodRestricter !== false) {
+    const result = applyMethodRestricter(req, config.methodRestricter ?? {});
+    if (result) return result;
   }
 
-  const response = NextResponse.next();
+  // Request size limiter (early reject)
+  if (config.requestSize !== false) {
+    const result = applyRequestSize(req, config.requestSize ?? {});
+    if (result) return result;
+  }
 
-  // Security headers
-  applySecurityHeaders(response, config.headers ?? {});
+  // Rate limiting (early reject)
+  if (config.rateLimit !== false) {
+    const result = applyRateLimit(req, config.rateLimit ?? {});
+    if (result) return result;
+  }
+
+  // XSS validation (early reject)
+  if (config.xss !== false) {
+    const result = applyXssValidation(req, config.xss ?? {});
+    if (result) return result;
+  }
+
+  // Generate nonce for CSP
+  let nonce: string | undefined;
+  if (config.nonce !== false) {
+    nonce = generateNonce();
+  }
+
+  // Clone request headers and add nonce so Next.js can read it during rendering
+  const requestHeaders = new Headers(req.headers);
+  if (nonce) {
+    requestHeaders.set('x-nonce', nonce);
+  }
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
+
+  // CSRF protection
+  if (config.csrf !== false) {
+    const result = applyCsrf(req, response, config.csrf ?? {});
+    if (result) return result;
+  }
+
+  // Security headers (with nonce if enabled)
+  if (config.headers !== false) {
+    applyHeaders(response, config.headers ?? {}, nonce);
+  }
+
+  // Also set nonce on response for downstream consumers
+  if (nonce) {
+    response.headers.set('x-nonce', nonce);
+  }
 
   // CORS
-  const corsResponse = applyCors(req, response, corsConfig);
-  if (corsResponse) return corsResponse;
+  if (config.cors !== false) {
+    const result = applyCors(req, response, config.cors ?? {});
+    if (result) return result;
+  }
 
   return response;
 }

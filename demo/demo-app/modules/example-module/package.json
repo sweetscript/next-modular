@@ -2,5 +2,9 @@
   "name": "example-module",
   "version": "0.1.0",
   "main": "./src/index.ts",
-  "private": true
+  "private": true,
+  "peerDependencies": {
+    "next": ">=16.0.0",
+    "next-modular": "*"
+  }
 }

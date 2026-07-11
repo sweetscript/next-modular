@@ -3,7 +3,10 @@ import { Providers } from "../components/providers";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "next-modular",
+  title: {
+    default: "next-modular",
+    template: "%s | next-modular",
+  },
   description: "A modular architecture framework for Next.js applications",
 };
 
