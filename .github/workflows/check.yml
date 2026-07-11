@@ -122,4 +122,3 @@ jobs:
           name: playwright-report-edge
           path: demo/demo-edge-app/playwright-report/
           retention-days: 7
-

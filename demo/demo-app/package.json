@@ -13,10 +13,10 @@
   },
   "dependencies": {
     "@next-modular/content-module": "file:../../modules/content-module",
-    "next": "16.2.10",
+    "next": "latest",
     "next-modular": "file:../../",
-    "react": "19.2.7",
-    "react-dom": "19.2.7"
+    "react": "latest",
+    "react-dom": "latest"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.1",
@@ -25,7 +25,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "latest",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

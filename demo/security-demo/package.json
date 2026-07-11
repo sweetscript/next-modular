@@ -12,18 +12,18 @@
   },
   "dependencies": {
     "@next-modular/security-module": "file:../../modules/security-module",
-    "next": "16.0.0",
+    "next": "latest",
     "next-modular": "file:../../",
-    "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react": "latest",
+    "react-dom": "latest"
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
-    "@types/node": "^20",
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.0",
+    "eslint-config-next": "latest",
     "typescript": "^5"
   }
 }

@@ -1,6 +1,11 @@
 # Dependencies
 node_modules
 
+# Demo app lock files (demo apps use `latest` deps, lock files not committed)
+demo/demo-app/package-lock.json
+demo/demo-edge-app/package-lock.json
+demo/security-demo/package-lock.json
+
 # Testing
 coverage
 
