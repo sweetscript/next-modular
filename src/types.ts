@@ -14,7 +14,6 @@ export interface ModuleMiddleware {
   // Typed as `any` for the request to avoid NextRequest version conflicts
   // in monorepo setups where next-modular and the app may resolve different
   // versions of next. The proxy always passes a real NextRequest at runtime.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handler: (req: any) => Promise<any> | any;
 }
 

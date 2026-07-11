@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { matchRoute, matchApiRoute } from './routeMatcher';
 import { moduleRegistry } from './registry';
 import { ensureModulesInitialized } from './config';
