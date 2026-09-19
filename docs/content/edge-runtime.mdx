@@ -11,6 +11,22 @@ The default handlers (`handleRoute`, `handleApiRoute`, `handleMiddleware`) rely 
 | `handleRoute` | `handleRouteWith` |
 | `handleApiRoute` | `handleApiRouteWith` |
 | `handleMiddleware` | `handleMiddlewareWith` |
+| `handleMetadata` | `handleMetadataWith` |
+
+To resolve route metadata on the edge, add a `generateMetadata` to your
+catch-all page that calls `handleMetadataWith(modules, pathname)`:
+
+```tsx
+// app/[...module]/page.tsx
+import { handleMetadataWith } from 'next-modular/edge';
+import { modules } from '../../modules.config';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }): Promise<Metadata> {
+  const { module } = await params;
+  return (await handleMetadataWith(modules, '/' + module.join('/'))) ?? {};
+}
+```
 
 ## Setting up an edge-compatible app
 

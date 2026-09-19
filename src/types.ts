@@ -1,8 +1,24 @@
-import type { NextConfig } from 'next';
+import type { NextConfig, Metadata } from 'next';
+
+/**
+ * Metadata for a module route. Either a static object or a function that
+ * receives the matched route params and returns metadata (sync or async).
+ *
+ * Note: `params` is passed as a plain resolved object, not a Promise. Module
+ * routes render through the catch-all page rather than directly by Next.js, so
+ * next-modular resolves the params before calling `generateMetadata`.
+ */
+export type RouteGenerateMetadata = (args: {
+  params: Record<string, string>;
+}) => Metadata | Promise<Metadata>;
 
 export interface ModuleRoute {
   path: string;
   component: React.ComponentType<any>;
+  /** Static metadata for this route ("being passed"). */
+  metadata?: Metadata;
+  /** Dynamic metadata resolved from the route params ("read from route"). */
+  generateMetadata?: RouteGenerateMetadata;
 }
 
 export interface ModuleApiRoute {
@@ -15,6 +31,11 @@ export interface ModuleMiddleware {
   // in monorepo setups where next-modular and the app may resolve different
   // versions of next. The proxy always passes a real NextRequest at runtime.
   handler: (req: any) => Promise<any> | any;
+  /**
+   * When true, the middleware runs on every request instead of only paths
+   * under the module's basePath. Any per-path filtering is left to the handler.
+   */
+  global?: boolean;
 }
 
 /**

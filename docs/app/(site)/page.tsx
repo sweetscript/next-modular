@@ -23,6 +23,63 @@ export const metadata: Metadata = {
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
+const features = [
+  {
+    icon: PuzzleIcon,
+    title: "Plug & Play Modules",
+    description:
+      "Add a module and it auto-registers its routes, APIs, and middleware. No manual wiring.",
+  },
+  {
+    icon: BoltIcon,
+    title: "CLI Scaffolding",
+    description:
+      "Init projects, add registry modules, or create new ones from templates in seconds.",
+  },
+  {
+    icon: ArrowPathIcon,
+    title: "Reusable Across Projects",
+    description:
+      "Publish a module to npm and use it in every Next.js app. Build once, use everywhere.",
+  },
+  {
+    icon: CogIcon,
+    title: "Per-Module Configuration",
+    description:
+      "Enable/disable features, pass custom options, and toggle routes, APIs, or middleware independently.",
+  },
+  {
+    icon: RouteIcon,
+    title: "Dynamic Route Matching",
+    description:
+      "Supports static, dynamic, and catch-all routes. Params are extracted and passed automatically.",
+  },
+  {
+    icon: ShieldIcon,
+    title: "Flexible Middleware",
+    description:
+      "Middleware runs scoped to a module's routes by default, or globally when you opt in.",
+  },
+  {
+    icon: CubeIcon,
+    title: "Module Registry",
+    description:
+      "Browse community and official modules. Install pre-built features with a single command.",
+  },
+  {
+    icon: WrenchIcon,
+    title: "Zero Build Overhead",
+    description:
+      "No code generation or build plugins. Modules resolve at runtime through standard Next.js catch-all routes.",
+  },
+  {
+    icon: CodeIcon,
+    title: "TypeScript Native",
+    description:
+      "Full type safety for module definitions, configs, and handlers. Autocomplete everywhere.",
+  },
+];
+
 export default function Home() {
   return (
     <>
@@ -32,10 +89,10 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Left - text */}
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 text-xs text-amber-800 dark:text-amber-300 mb-5">
+            {/* <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 text-xs text-amber-800 dark:text-amber-300 mb-5">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
               Under development, contributions welcome
-            </div>
+            </div> */}
             <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight leading-[1.1]">
               <span className="text-teal-600">Modular architecture</span>
               <br />
@@ -191,7 +248,7 @@ export default function Home() {
                 <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
               </div>
               <p className="text-xs font-semibold uppercase tracking-widest text-red-400">The hard way</p>
-              <h3 className="mt-2 text-xl font-bold">Micro-frontends</h3>
+              <h3 className="mt-2 text-xl font-bold">Micro-frontends/Multi-zones</h3>
               <div className="mt-6 space-y-4 text-sm text-gray-600 dark:text-gray-400">
                 <div className="flex items-start gap-3">
                   <span className="mt-0.5 w-5 h-5 rounded-full bg-red-100 dark:bg-red-900/40 flex items-center justify-center text-[10px]">1</span>
@@ -369,78 +426,21 @@ export default function Home() {
           A complete toolkit for building modular Next.js applications at any scale.
         </p>
 
-        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
-              <PuzzleIcon className="w-5 h-5" />
+        <div className="mt-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px rounded-2xl overflow-hidden border border-gray-200 dark:border-neutral-800 bg-gray-200 dark:bg-neutral-800">
+          {features.map(({ icon: Icon, title, description }) => (
+            <div
+              key={title}
+              className="group bg-white dark:bg-[#0f1a1a] p-6 transition-colors hover:bg-teal-50/50 dark:hover:bg-teal-950/20"
+            >
+              <div className="w-10 h-10 rounded-lg bg-teal-50 dark:bg-teal-900/20 ring-1 ring-inset ring-teal-100 dark:ring-teal-800/40 flex items-center justify-center text-teal-600 dark:text-teal-400 transition-colors group-hover:bg-teal-100 dark:group-hover:bg-teal-900/40">
+                <Icon className="w-5 h-5" />
+              </div>
+              <h3 className="mt-4 font-semibold">{title}</h3>
+              <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
+                {description}
+              </p>
             </div>
-            <h3 className="mt-4 font-semibold">Plug & Play Modules</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Add a module and it auto-registers its routes, APIs, and middleware. No manual wiring.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
-              <BoltIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">CLI Scaffolding</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Init projects, add registry modules, or create new ones from templates in seconds.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-400">
-              <ArrowPathIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">Reusable Across Projects</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Publish a module to npm and use it in every Next.js app. Build once, use everywhere.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
-              <CogIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">Per-Module Configuration</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Enable/disable features, pass custom options, and toggle routes, APIs, or middleware independently.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center text-cyan-600 dark:text-cyan-400">
-              <RouteIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">Dynamic Route Matching</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Supports static, dynamic, and catch-all routes. Params are extracted and passed automatically.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-pink-100 dark:bg-pink-900/30 flex items-center justify-center text-pink-600 dark:text-pink-400">
-              <ShieldIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">Scoped Middleware</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Each module runs its own middleware only for its own routes. No global middleware soup.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
-              <CubeIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">Module Registry</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Browse community and official modules. Install pre-built features with a single command.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-              <WrenchIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">Zero Build Overhead</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">No code generation or build plugins. Modules resolve at runtime through standard Next.js catch-all routes.</p>
-          </div>
-
-          <div className="rounded-xl border border-gray-200 dark:border-neutral-700 p-6 hover:shadow-md transition-shadow">
-            <div className="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
-              <CodeIcon className="w-5 h-5" />
-            </div>
-            <h3 className="mt-4 font-semibold">TypeScript Native</h3>
-            <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Full type safety for module definitions, configs, and handlers. Autocomplete everywhere.</p>
-          </div>
+          ))}
         </div>
       </section>
 

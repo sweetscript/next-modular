@@ -1,11 +1,13 @@
 export { defineModule } from './defineModule';
+export { route } from './route';
 export { moduleRegistry } from './registry';
 export { matchRoute, matchApiRoute, matchRouteIn, matchApiRouteIn } from './routeMatcher';
-export { handleRoute, handleApiRoute, handleMiddleware } from './handlers';
-export { handleRouteWith, handleApiRouteWith, handleMiddlewareWith } from './handlers-stateless';
+export { handleRoute, handleApiRoute, handleMiddleware, handleMetadata } from './handlers';
+export { handleRouteWith, handleApiRouteWith, handleMiddlewareWith, handleMetadataWith } from './handlers-stateless';
 export { configureModules, withNextModular, ensureModulesInitialized } from './config';
 export { mergeModuleConfigs } from './configMerge';
 export { getAllModuleStaticParams } from './staticParams';
+export { setDebug, isDebugEnabled } from './debug';
 
 export type {
   ModuleRoute,
@@ -15,7 +17,9 @@ export type {
   ModuleNextConfig,
   NextModularConfig,
   BaseModuleConfig,
+  RouteGenerateMetadata,
 } from './types';
+export type { RouteModule } from './route';
 
 import { moduleRegistry } from './registry';
 

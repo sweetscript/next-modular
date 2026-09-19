@@ -1,5 +1,5 @@
 /**
- * Hello API endpoint - GET /api/example-module/hello
+ * Hello API endpoint - GET /api/example/hello
  */
 export async function helloHandler(req: Request) {
   if (req.method !== 'GET') {

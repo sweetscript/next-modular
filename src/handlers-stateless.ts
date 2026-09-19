@@ -1,5 +1,7 @@
+import type { Metadata } from 'next';
 import { ModuleDefinition } from './types';
 import { matchRouteIn, matchApiRouteIn } from './routeMatcher';
+import { resolveRouteMetadata } from './metadata';
 
 /**
  * Stateless version of handleRoute.
@@ -79,11 +81,31 @@ export async function handleMiddlewareWith(
     if (moduleConfig?.enabled === false) continue;
     if (moduleConfig?.features?.middleware === false) continue;
 
-    if (pathname.startsWith(module.basePath) || pathname.startsWith(`/api${module.basePath}`)) {
+    // Global middleware runs on every request; otherwise scope to basePath.
+    const inScope =
+      module.middleware.global === true ||
+      pathname.startsWith(module.basePath) ||
+      pathname.startsWith(`/api${module.basePath}`);
+
+    if (inScope) {
       const result = await module.middleware.handler(req);
       if (result) return result;
     }
   }
 
   return null;
+}
+
+/**
+ * Stateless version of handleMetadata.
+ * Accepts modules directly — no global registry, safe for Edge Runtime.
+ */
+export async function handleMetadataWith(
+  modules: ModuleDefinition[],
+  pathname: string
+): Promise<Metadata | null> {
+  const match = matchRouteIn(modules, pathname);
+  if (!match) return null;
+
+  return resolveRouteMetadata(match.route, match.params);
 }

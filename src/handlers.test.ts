@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { handleRoute, handleApiRoute, handleMiddleware } from './handlers';
+import { handleRoute, handleApiRoute, handleMiddleware, handleMetadata } from './handlers';
 import { moduleRegistry } from './registry';
 import { ModuleDefinition } from './types';
 
@@ -458,6 +458,150 @@ describe('handlers', () => {
       await handleMiddleware(req);
 
       expect(mockMiddleware).not.toHaveBeenCalled();
+    });
+
+    it('should call global middleware for non-matching paths', async () => {
+      const mockMiddleware = vi.fn(async () => undefined);
+
+      const module: ModuleDefinition = {
+        name: 'test-module',
+        basePath: '/test',
+        middleware: {
+          handler: mockMiddleware,
+          global: true,
+        },
+      };
+
+      moduleRegistry.register(module);
+
+      const req = {
+        nextUrl: { pathname: '/completely/unrelated' },
+      } as any;
+
+      await handleMiddleware(req);
+
+      expect(mockMiddleware).toHaveBeenCalledWith(req);
+    });
+
+    it('should still respect disabled feature for global middleware', async () => {
+      const mockMiddleware = vi.fn(async () => undefined);
+
+      const module: ModuleDefinition = {
+        name: 'test-module',
+        basePath: '/test',
+        middleware: {
+          handler: mockMiddleware,
+          global: true,
+        },
+        config: {
+          features: { middleware: false },
+        },
+      };
+
+      moduleRegistry.register(module);
+
+      const req = {
+        nextUrl: { pathname: '/anything' },
+      } as any;
+
+      await handleMiddleware(req);
+
+      expect(mockMiddleware).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('handleMetadata', () => {
+    it('returns null when no route matches', async () => {
+      moduleRegistry.register({
+        name: 'test-module',
+        basePath: '/test',
+        routes: [{ path: '/page', component: () => null }],
+      });
+
+      const result = await handleMetadata('/other/page');
+
+      expect(result).toBeNull();
+    });
+
+    it('returns null when the matched route declares no metadata', async () => {
+      moduleRegistry.register({
+        name: 'test-module',
+        basePath: '/test',
+        routes: [{ path: '/page', component: () => null }],
+      });
+
+      const result = await handleMetadata('/test/page');
+
+      expect(result).toBeNull();
+    });
+
+    it('returns static metadata for a matching route', async () => {
+      moduleRegistry.register({
+        name: 'test-module',
+        basePath: '/test',
+        routes: [
+          { path: '/page', component: () => null, metadata: { title: 'Hello' } },
+        ],
+      });
+
+      const result = await handleMetadata('/test/page');
+
+      expect(result).toEqual({ title: 'Hello' });
+    });
+
+    it('resolves dynamic metadata with route params', async () => {
+      moduleRegistry.register({
+        name: 'test-module',
+        basePath: '/users',
+        routes: [
+          {
+            path: '/[id]',
+            component: () => null,
+            generateMetadata: ({ params }) => ({ title: `User ${params.id}` }),
+          },
+        ],
+      });
+
+      const result = await handleMetadata('/users/42');
+
+      expect(result).toEqual({ title: 'User 42' });
+    });
+
+    it('prefers generateMetadata over static metadata', async () => {
+      moduleRegistry.register({
+        name: 'test-module',
+        basePath: '/test',
+        routes: [
+          {
+            path: '/page',
+            component: () => null,
+            metadata: { title: 'Static' },
+            generateMetadata: () => ({ title: 'Dynamic' }),
+          },
+        ],
+      });
+
+      const result = await handleMetadata('/test/page');
+
+      expect(result).toEqual({ title: 'Dynamic' });
+    });
+
+    it('awaits async generateMetadata', async () => {
+      moduleRegistry.register({
+        name: 'test-module',
+        basePath: '/test',
+        routes: [
+          {
+            path: '/page',
+            component: () => null,
+            generateMetadata: async () => ({ title: 'Async' }),
+          },
+        ],
+      });
+
+      const result = await handleMetadata('/test/page');
+
+      expect(result).toEqual({ title: 'Async' });
     });
   });
 });

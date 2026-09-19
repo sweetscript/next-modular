@@ -1,5 +1,5 @@
 /**
- * Item API endpoint - GET /api/example-module/items/[id]
+ * Item API endpoint - GET /api/example/items/[id]
  * Demonstrates dynamic API routes with path parameters
  */
 export async function getItemHandler(req: Request, context: { params: { id: string } }) {
