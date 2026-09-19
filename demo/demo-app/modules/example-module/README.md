@@ -41,13 +41,14 @@ export const modules = [
 
 ## Routes
 
-- `/example-module` - Home page
-- `/example-module/[id]` - Detail page with dynamic ID parameter
+- `/example` - Home page
+- `/example/[id]` - Detail page with dynamic ID parameter
+- `/example/about` - Static page registered with the direct component form
 
 ## API Endpoints
 
-- `GET /api/example-module/hello` - Hello endpoint
-- `GET /api/example-module/items/[id]` - Get item by ID (dynamic route)
+- `GET /api/example/hello` - Hello endpoint
+- `GET /api/example/items/[id]` - Get item by ID (dynamic route)
 
 ## Configuration
 

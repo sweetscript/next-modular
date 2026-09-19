@@ -8,9 +8,10 @@
  * Usage:
  *   import { handleApiRouteWith, handleMiddlewareWith } from 'next-modular/edge';
  */
-export { handleRouteWith, handleApiRouteWith, handleMiddlewareWith } from './handlers-stateless';
+export { handleRouteWith, handleApiRouteWith, handleMiddlewareWith, handleMetadataWith } from './handlers-stateless';
 export { matchRouteIn, matchApiRouteIn } from './routeMatcher';
 export { defineModule } from './defineModule';
+export { route } from './route';
 
 export type {
   ModuleDefinition,
@@ -19,4 +20,6 @@ export type {
   ModuleMiddleware,
   ModuleNextConfig,
   BaseModuleConfig,
+  RouteGenerateMetadata,
 } from './types';
+export type { RouteModule } from './route';

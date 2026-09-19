@@ -1,5 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 
 interface DetailPageProps {
   params: {
@@ -7,48 +8,54 @@ interface DetailPageProps {
   };
 }
 
+// Dynamic route metadata — receives the matched route params and builds the
+// title from the id. Resolved by next-modular's handleMetadata.
+export function generateMetadata({ params }: { params: Record<string, string> }): Metadata {
+  return {
+    title: `Item ${params.id} — Example Module`,
+    description: `Detail view for item ${params.id}.`,
+  };
+}
+
 export default function ExampleModuleDetailPage({ params }: DetailPageProps) {
   return (
-    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
-      <Link 
-        href="/example-module"
-        style={{ 
-          color: '#0070f3', 
-          textDecoration: 'none',
-          display: 'inline-block',
-          marginBottom: '1rem'
-        }}
-      >
-        ← Back to ExampleModule
-      </Link>
-      
-      <h1 style={{ marginBottom: '1.5rem', color: '#0070f3' }}>
-        ExampleModule - Detail View
-      </h1>
-      
-      <div style={{ padding: '1.5rem', backgroundColor: '#f0f9ff', borderRadius: '8px', border: '1px solid #0070f3' }}>
-        <h2 style={{ marginBottom: '1rem', color: '#0070f3' }}>Dynamic Route Parameter</h2>
-        <p style={{ marginBottom: '0.5rem' }}>
-          <strong>ID:</strong> <code style={{ padding: '0.25rem 0.5rem', backgroundColor: '#fff', borderRadius: '4px' }}>{params.id}</code>
-        </p>
-        <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '1rem' }}>
-          This page demonstrates a dynamic route pattern: <code>/[id]</code>
-        </p>
-        <p style={{ fontSize: '0.9rem', color: '#666', marginTop: '0.5rem' }}>
-          The ID parameter is extracted from the URL and can be used to fetch data, 
-          display specific content, or perform any logic based on the route.
-        </p>
-      </div>
-      
-      <div style={{ marginTop: '2rem' }}>
-        <h3 style={{ marginBottom: '1rem' }}>What you can do here:</h3>
-        <ul style={{ lineHeight: '2' }}>
-          <li>Fetch data based on the ID parameter</li>
-          <li>Display item-specific information</li>
-          <li>Implement CRUD operations</li>
-          <li>Handle loading and error states</li>
-        </ul>
-      </div>
+    <div className="min-h-screen bg-zinc-50 font-sans dark:bg-black">
+      <main className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-6 py-20 sm:px-10">
+        <Link
+          href="/example"
+          className="text-sm font-medium text-zinc-500 transition-colors hover:text-black dark:hover:text-zinc-50"
+        >
+          ← Back to example module
+        </Link>
+
+        <header className="flex flex-col gap-3">
+          <span className="text-sm font-medium uppercase tracking-widest text-zinc-500">
+            detail view
+          </span>
+          <h1 className="text-3xl font-semibold tracking-tight text-black dark:text-zinc-50">
+            Item{' '}
+            <code className="rounded-md bg-black/[.04] px-2 py-1 text-2xl dark:bg-white/[.08]">
+              {params.id}
+            </code>
+          </h1>
+          <p className="max-w-xl text-lg leading-8 text-zinc-600 dark:text-zinc-400">
+            This route is registered with <code>route(&apos;/[id]&apos;, detail)</code> and
+            uses <code>generateMetadata</code> to build the page title from the
+            route params.
+          </p>
+        </header>
+
+        <section className="rounded-xl border border-black/[.08] bg-white p-6 dark:border-white/[.145] dark:bg-black">
+          <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-500">
+            Route parameter
+          </h2>
+          <p className="mt-3 text-zinc-600 dark:text-zinc-400">
+            Matched the dynamic pattern <code>/[id]</code>. The <code>id</code>{' '}
+            parameter (<code>{params.id}</code>) is extracted from the URL and can
+            be used to fetch data or render item-specific content.
+          </p>
+        </section>
+      </main>
     </div>
   );
 }

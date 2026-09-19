@@ -45,6 +45,13 @@ Every module accepts these base options:
 
 When a feature is disabled, requests to those paths return 404 (routes) or 503 (API).
 
+## Global middleware
+
+A module's middleware is scoped to its `basePath` by default. To run it on every
+request, set `global: true` in the module definition's `middleware` block. See
+[Module Structure › Middleware](/docs/module-structure) for details. The
+`features.middleware` toggle above still disables it regardless of `global`.
+
 ## Runtime initialization
 
 The `next-modular.runtime.ts` file bridges config and runtime:
@@ -59,6 +66,17 @@ export { modules };
 ```
 
 This file is imported by the catch-all routes to ensure modules are registered before handling requests. `configureModules()` clears the registry and re-registers all modules from the config.
+
+## Debug logging
+
+next-modular's `[next-modular]` logs are off by default. Enable them with an
+environment variable:
+
+```bash
+NEXT_MODULAR_DEBUG=true npm run dev
+```
+
+You can also toggle it programmatically with `setDebug(true)`.
 
 ## Accessing module config at runtime
 

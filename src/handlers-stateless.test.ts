@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { handleRouteWith, handleApiRouteWith, handleMiddlewareWith } from './handlers-stateless';
+import { handleRouteWith, handleApiRouteWith, handleMiddlewareWith, handleMetadataWith } from './handlers-stateless';
 import type { ModuleDefinition } from './types';
 
 // Minimal stub component
@@ -189,6 +189,90 @@ describe('handleMiddlewareWith', () => {
   it('does not use global registry', async () => {
     const req = makeRequest('/test/something');
     const result = await handleMiddlewareWith([], req);
+    expect(result).toBeNull();
+  });
+
+  it('runs global middleware on non-matching paths', async () => {
+    const handler = async () => new Response('global', { status: 200 });
+    const modules = [makeModule({
+      basePath: '/test',
+      middleware: { handler, global: true },
+    })];
+    const req = makeRequest('/completely/unrelated');
+    const result = await handleMiddlewareWith(modules, req);
+    expect(result).not.toBeNull();
+    expect(result.status).toBe(200);
+  });
+
+  it('still skips disabled global middleware', async () => {
+    const handler = async () => new Response('should not reach', { status: 200 });
+    const modules = [makeModule({
+      middleware: { handler, global: true },
+      config: { features: { middleware: false } },
+    })];
+    const req = makeRequest('/anything');
+    const result = await handleMiddlewareWith(modules, req);
+    expect(result).toBeNull();
+  });
+});
+
+describe('handleMetadataWith', () => {
+  it('returns null when no route matches', async () => {
+    const modules = [makeModule({
+      routes: [{ path: '/page', component: StubComponent }],
+    })];
+    const result = await handleMetadataWith(modules, '/other/page');
+    expect(result).toBeNull();
+  });
+
+  it('returns null when the matched route declares no metadata', async () => {
+    const modules = [makeModule({
+      routes: [{ path: '/', component: StubComponent }],
+    })];
+    const result = await handleMetadataWith(modules, '/test');
+    expect(result).toBeNull();
+  });
+
+  it('returns static metadata for a matching route', async () => {
+    const modules = [makeModule({
+      routes: [{ path: '/', component: StubComponent, metadata: { title: 'Hello' } }],
+    })];
+    const result = await handleMetadataWith(modules, '/test');
+    expect(result).toEqual({ title: 'Hello' });
+  });
+
+  it('resolves dynamic metadata with route params', async () => {
+    const modules = [makeModule({
+      basePath: '/users',
+      routes: [
+        {
+          path: '/[id]',
+          component: StubComponent,
+          generateMetadata: ({ params }) => ({ title: `User ${params.id}` }),
+        },
+      ],
+    })];
+    const result = await handleMetadataWith(modules, '/users/42');
+    expect(result).toEqual({ title: 'User 42' });
+  });
+
+  it('prefers generateMetadata over static metadata', async () => {
+    const modules = [makeModule({
+      routes: [
+        {
+          path: '/',
+          component: StubComponent,
+          metadata: { title: 'Static' },
+          generateMetadata: () => ({ title: 'Dynamic' }),
+        },
+      ],
+    })];
+    const result = await handleMetadataWith(modules, '/test');
+    expect(result).toEqual({ title: 'Dynamic' });
+  });
+
+  it('does not use global registry', async () => {
+    const result = await handleMetadataWith([], '/test');
     expect(result).toBeNull();
   });
 });

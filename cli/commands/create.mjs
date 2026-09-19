@@ -86,11 +86,25 @@ async function create(options) {
       const routesDir = path.join(srcDir, 'routes');
       fs.mkdirSync(routesDir);
 
-      const homeRouteContent = `'use client';
+      const homeMetadataBlock = useTypeScript
+        ? `import type { Metadata } from 'next';
 
-import React from 'react';
+// Static route metadata — resolved by next-modular in the catch-all page.
+export const metadata: Metadata = {
+  title: '${ModuleClassName} Module',
+  description: 'Home page of the ${moduleName} module.',
+};
+`
+        : `// Static route metadata — resolved by next-modular in the catch-all page.
+export const metadata = {
+  title: '${ModuleClassName} Module',
+  description: 'Home page of the ${moduleName} module.',
+};
+`;
+
+      const homeRouteContent = `import React from 'react';
 import Link from 'next/link';
-
+${homeMetadataBlock}
 export default function ${ModuleClassName}HomePage() {
   const exampleItems = [
     { id: '123', name: 'Item 123' },
@@ -125,8 +139,6 @@ export default function ${ModuleClassName}HomePage() {
                   borderRadius: '4px',
                   transition: 'background-color 0.2s'
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e6f3ff'}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
               >
                 <strong>{item.name}</strong>
                 <code style={{ marginLeft: '0.5rem', fontSize: '0.85rem', color: '#666' }}>
@@ -153,16 +165,38 @@ export default function ${ModuleClassName}HomePage() {
       fs.writeFileSync(path.join(routesDir, `home.${ext}`), homeRouteContent);
 
       // Create a dynamic route
-      const detailRouteContent = `import React from 'react';
-import Link from 'next/link';
+      const detailMetadataBlock = useTypeScript
+        ? `import type { Metadata } from 'next';
 
-${useTypeScript ? `interface DetailPageProps {
+interface DetailPageProps {
   params: {
     id: string;
   };
 }
 
-export default function ${ModuleClassName}DetailPage({ params }: DetailPageProps) {` : `export default function ${ModuleClassName}DetailPage({ params }) {`}
+// Dynamic route metadata — receives the matched route params.
+export function generateMetadata({ params }: { params: Record<string, string> }): Metadata {
+  return {
+    title: \`Item \${params.id} — ${ModuleClassName}\`,
+    description: \`Detail view for item \${params.id}.\`,
+  };
+}
+
+export default function ${ModuleClassName}DetailPage({ params }: DetailPageProps) {`
+        : `// Dynamic route metadata — receives the matched route params.
+export function generateMetadata({ params }) {
+  return {
+    title: \`Item \${params.id} — ${ModuleClassName}\`,
+    description: \`Detail view for item \${params.id}.\`,
+  };
+}
+
+export default function ${ModuleClassName}DetailPage({ params }) {`;
+
+      const detailRouteContent = `import React from 'react';
+import Link from 'next/link';
+
+${detailMetadataBlock}
   return (
     <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
       <Link 
@@ -209,6 +243,43 @@ export default function ${ModuleClassName}DetailPage({ params }: DetailPageProps
 }
 `;
       fs.writeFileSync(path.join(routesDir, `detail.${ext}`), detailRouteContent);
+
+      // Create a static route registered with the direct component form
+      const aboutRouteContent = `import React from 'react';
+import Link from 'next/link';
+
+// This route is registered by passing the component directly in the module
+// definition (see index.${configExt}), rather than via the route() helper. If you
+// want metadata for a route wired this way, attach it in the route object.
+export default function ${ModuleClassName}AboutPage() {
+  return (
+    <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto' }}>
+      <Link
+        href="/${moduleName}"
+        style={{
+          color: '#0070f3',
+          textDecoration: 'none',
+          display: 'inline-block',
+          marginBottom: '1rem',
+        }}
+      >
+        ← Back to ${ModuleClassName}
+      </Link>
+
+      <h1 style={{ marginBottom: '1.5rem', color: '#0070f3' }}>
+        ${ModuleClassName} - About
+      </h1>
+
+      <p style={{ marginBottom: '1rem', fontSize: '1.1rem' }}>
+        The home and detail routes use the <code>route()</code> helper, which also
+        wires up their metadata / generateMetadata exports. This route is
+        registered by passing the component directly.
+      </p>
+    </div>
+  );
+}
+`;
+      fs.writeFileSync(path.join(routesDir, `about.${ext}`), aboutRouteContent);
     }
 
     // Create API endpoints if selected
@@ -302,9 +373,10 @@ export async function ${moduleVarName}Middleware(req${useTypeScript ? ': NextReq
     }
 
     // Create index file
+    const routeHelperImport = features.includes('routes') ? ', route' : '';
     const defineModuleImport = useTypeScript
-      ? "import { defineModule } from 'next-modular';"
-      : "const { defineModule } = require('next-modular');";
+      ? `import { defineModule${routeHelperImport} } from 'next-modular';`
+      : `const { defineModule${routeHelperImport} } = require('next-modular');`;
 
     const imports = [];
     const routesList = [];
@@ -312,16 +384,16 @@ export async function ${moduleVarName}Middleware(req${useTypeScript ? ': NextReq
     let middlewareExport = '';
 
     if (features.includes('routes')) {
-      imports.push(`import ${ModuleClassName}HomePage from './routes/home';`);
-      imports.push(`import ${ModuleClassName}DetailPage from './routes/detail';`);
-      routesList.push(`    {
-      path: '/',
-      component: ${ModuleClassName}HomePage,
-    },`);
-      routesList.push(`    {
-      path: '/[id]',
-      component: ${ModuleClassName}DetailPage,
-    },`);
+      // Namespace imports so route() can pull default + metadata/generateMetadata.
+      imports.push(`import * as home from './routes/home';`);
+      imports.push(`import * as detail from './routes/detail';`);
+      // You can also import the component directly and pass it as \`component\`.
+      imports.push(`import ${ModuleClassName}AboutPage from './routes/about';`);
+      routesList.push(`    // route() reads the component and metadata from the route file.`);
+      routesList.push(`    route('/', home),`);
+      routesList.push(`    // You can also pass a component directly.`);
+      routesList.push(`    { path: '/about', component: ${ModuleClassName}AboutPage },`);
+      routesList.push(`    route('/[id]', detail),`);
     }
 
     if (features.includes('api')) {
@@ -341,6 +413,9 @@ export async function ${moduleVarName}Middleware(req${useTypeScript ? ': NextReq
       imports.push(`import { ${moduleVarName}Middleware } from './server/middleware';`);
       middlewareExport = `  middleware: {
     handler: ${moduleVarName}Middleware,
+    // Set global: true to run this middleware on every request instead of
+    // only paths under the module's basePath.
+    // global: true,
   },`;
     }
 

@@ -22,9 +22,10 @@ my-module/
 The entry point uses `defineModule()` to declare the module's name, base path, and register its routes, API handlers, and middleware:
 
 ```ts
-import { defineModule } from 'next-modular';
-import HomePage from './routes/home';
-import DetailPage from './routes/detail';
+import { defineModule, route } from 'next-modular';
+import * as home from './routes/home';
+import * as detail from './routes/detail';
+import AboutPage from './routes/about';
 import { helloHandler } from './server/api/hello';
 import { myMiddleware } from './server/middleware';
 
@@ -36,8 +37,11 @@ export const myModule = defineModule<MyModuleConfig>({
   name: 'my-module',
   basePath: '/my-module',
   routes: [
-    { path: '/', component: HomePage },
-    { path: '/[id]', component: DetailPage },
+    // route() reads the component and metadata from the route file.
+    route('/', home),
+    // You can also pass a component directly.
+    { path: '/about', component: AboutPage },
+    route('/[id]', detail),
   ],
   apiRoutes: [
     { path: '/hello', handler: helloHandler },
@@ -47,6 +51,15 @@ export const myModule = defineModule<MyModuleConfig>({
   },
 });
 ```
+
+There are two ways to register a route, and you can mix them:
+
+- **`route(path, mod)`** takes a route file imported as a namespace
+  (`import * as home`) and pulls out its default component plus any `metadata` /
+  `generateMetadata` exports. Use this when the route has metadata.
+- **The plain object form** takes a component you import directly
+  (`import AboutPage from './routes/about'`). Metadata is optional here — attach
+  `metadata` / `generateMetadata` to the object yourself if you need it.
 
 The returned module is callable. You can pass configuration when registering it:
 
@@ -63,6 +76,51 @@ export default function DetailPage({ params }: { params: Record<string, string> 
   return <div>Item: {params.id}</div>;
 }
 ```
+
+## Route metadata
+
+A route file can export Next.js metadata just like a normal page — either a
+static `metadata` object or a dynamic `generateMetadata` function:
+
+```tsx
+import type { Metadata } from 'next';
+
+// Static:
+export const metadata: Metadata = { title: 'Home' };
+
+// Or dynamic, from the matched route params:
+export function generateMetadata({ params }: { params: Record<string, string> }): Metadata {
+  return { title: `Item ${params.id}` };
+}
+
+export default function HomePage() {
+  return <div>Home</div>;
+}
+```
+
+Register the route with `route()` so these exports are picked up. Because module
+routes render through the catch-all page, resolve the metadata in
+`app/[...module]/page.tsx` with `handleMetadata`:
+
+```tsx
+import { handleMetadata } from 'next-modular';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ module: string[] }>;
+}): Promise<Metadata> {
+  const { module } = await params;
+  return (await handleMetadata('/' + module.join('/'))) ?? {};
+}
+```
+
+`generateMetadata` takes precedence over the static `metadata` object when both
+are present. App-wide defaults still belong in your root `layout.tsx`.
+
+`params` is passed as a plain resolved object (not a Promise), since module
+routes are resolved by next-modular rather than by Next.js directly.
 
 ## API handlers
 
@@ -89,6 +147,27 @@ export async function myMiddleware(req: NextRequest) {
 }
 ```
 
+### Global middleware
+
+Set `global: true` on the middleware definition to run it on every request
+instead of only paths under the module's `basePath`. Any path filtering is then
+up to the handler:
+
+```ts
+export const myModule = defineModule({
+  name: 'my-module',
+  basePath: '/my-module',
+  middleware: {
+    handler: myMiddleware,
+    global: true,
+  },
+});
+```
+
+Middleware runs in registration order; the first handler to return a value
+short-circuits the chain. The `enabled` and `features.middleware` config toggles
+still apply.
+
 ## Path matching
 
 Routes support:
@@ -97,3 +176,5 @@ Routes support:
 - Catch-all routes: `/[...slug]`
 
 The route matcher resolves the URL relative to the module's `basePath`. For example, a module with `basePath: '/blog'` and route `path: '/[slug]'` matches `/blog/my-post`.
+
+Routes are matched in declaration order, and static segments are not automatically prioritized over dynamic ones. Declare specific static routes (like `/about`) before dynamic ones (like `/[id]`), otherwise the dynamic route will capture the static path first.

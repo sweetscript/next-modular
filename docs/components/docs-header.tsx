@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Search } from "nextra/components";
 import { Logo } from "./logo";
 import { ThemeToggle } from "./theme-toggle";
+import { VersionBadge } from "./version-badge";
 
 export function DocsHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,9 +15,7 @@ export function DocsHeader() {
       <nav className="flex items-center justify-between px-6 py-3 mx-auto">
         <Link href="/" className="flex items-center gap-2">
           <Logo className="h-6" />
-          <span className="text-[10px] font-semibold uppercase tracking-wide px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300">
-            Beta
-          </span>
+          <VersionBadge />
         </Link>
 
         {/* Desktop nav */}
