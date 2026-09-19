@@ -1,7 +1,5 @@
 # Next Modular
 
-> Under development, contributions welcome.
-
 A modular architecture system for Next.js applications that enables building reusable, self-contained modules with their own routes, API endpoints, and middleware.
 
 ## Features
