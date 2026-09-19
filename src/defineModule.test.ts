@@ -29,6 +29,26 @@ describe('defineModule', () => {
     expect(module.basePath).toBe('/test');
   });
 
+  it('should expose the module name on the callable (not the internal function name)', () => {
+    const module = defineModule({
+      name: 'my-module',
+      basePath: '/my-module',
+    });
+
+    // Regression: bare module callables previously all shared the internal
+    // function name, colliding in the registry (which keys by `name`).
+    expect(module.name).toBe('my-module');
+  });
+
+  it('should give distinct names to distinct bare modules', () => {
+    const a = defineModule({ name: 'module-a', basePath: '/a' });
+    const b = defineModule({ name: 'module-b', basePath: '/b' });
+
+    expect(a.name).toBe('module-a');
+    expect(b.name).toBe('module-b');
+    expect(a.name).not.toBe(b.name);
+  });
+
   it('should remove trailing slash from basePath', () => {
     const module = defineModule({
       name: 'test',

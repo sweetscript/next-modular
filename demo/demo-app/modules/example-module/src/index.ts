@@ -1,6 +1,10 @@
-import { defineModule } from 'next-modular';
-import ExampleModuleHomePage from './routes/home';
-import ExampleModuleDetailPage from './routes/detail';
+import { defineModule, route } from 'next-modular';
+// Import the route file as a namespace so route() can pull the default
+// component plus any metadata / generateMetadata exports.
+import * as home from './routes/home';
+import * as detail from './routes/detail';
+// You can also import the component directly and pass it as `component`.
+import ExampleModuleAboutPage from './routes/about';
 import { helloHandler } from './server/api/hello';
 import { getItemHandler } from './server/api/items';
 import { exampleModuleMiddleware } from './server/middleware';
@@ -40,16 +44,13 @@ export interface ExampleModuleConfig {
  */
 export const exampleModule = defineModule<ExampleModuleConfig>({
   name: 'example-module',
-  basePath: '/example-module',
+  basePath: '/example',
   routes: [
-    {
-      path: '/',
-      component: ExampleModuleHomePage,
-    },
-    {
-      path: '/[id]',
-      component: ExampleModuleDetailPage,
-    },
+    // route() reads the component and metadata from the route file.
+    route('/', home),
+    // You can also pass a component directly.
+    { path: '/about', component: ExampleModuleAboutPage },
+    route('/[id]', detail),
   ],
   apiRoutes: [
     {
@@ -60,8 +61,12 @@ export const exampleModule = defineModule<ExampleModuleConfig>({
       path: '/items/[id]',
       handler: getItemHandler,
     },
-  ],  middleware: {
+  ],
+  middleware: {
     handler: exampleModuleMiddleware,
+    // Runs on every request (not just /example paths). Any path
+    // filtering is handled inside the middleware itself.
+    global: true,
   },
 });
 

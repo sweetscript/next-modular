@@ -77,6 +77,16 @@ export function defineModule<TConfig = any>(
     }
   });
 
+  // A function's `name` can't be set by assignment (it's read-only), but it is
+  // configurable — so define it explicitly. Without this, every bare module
+  // callable keeps the internal name and collides in the registry (which keys
+  // modules by `name`), causing modules registered in their uncalled form to
+  // overwrite each other.
+  Object.defineProperty(configurableModule, 'name', {
+    value: definition.name,
+    configurable: true,
+  });
+
   return configurableModule;
 }
 

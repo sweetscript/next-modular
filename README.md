@@ -7,8 +7,9 @@ A modular architecture system for Next.js applications that enables building reu
 ## Features
 
 - **Route Modules** - Define page routes within modules
+- **Route Metadata** - Per-route Next.js `metadata` / `generateMetadata`, resolved through the catch-all
 - **API Endpoints** - Create module-specific API routes with dynamic parameters
-- **Middleware** - Add module-level middleware logic
+- **Middleware** - Add module-level middleware, scoped to the module or global
 - **Type-Safe** - Full TypeScript support
 - **CLI Tools** - Initialize, add, and create modules with an interactive CLI
 - **Module Registry** - Browse and install official and community modules
@@ -33,11 +34,13 @@ npm run dev
 
 ### Module Definition
 
-Modules are defined using `defineModule`:
+Modules are defined using `defineModule`. Use the `route()` helper to wire a
+route file in — it pulls the default component plus optional `metadata` /
+`generateMetadata` from the file's exports:
 
 ```typescript
-import { defineModule } from 'next-modular';
-import DashboardPage from './routes/dashboard';
+import { defineModule, route } from 'next-modular';
+import * as dashboard from './routes/dashboard';
 import { helloHandler } from './server/api/hello';
 import { myMiddleware } from './server/middleware';
 
@@ -45,7 +48,7 @@ export const myModule = defineModule({
   name: 'my-module',
   basePath: '/my-module',
   routes: [
-    { path: '/dashboard', component: DashboardPage },
+    route('/dashboard', dashboard),
   ],
   apiRoutes: [
     { path: '/hello', handler: helloHandler },
@@ -54,6 +57,16 @@ export const myModule = defineModule({
     handler: myMiddleware,
   },
 });
+```
+
+The plain object form still works if you don't need metadata:
+
+```typescript
+import DashboardPage from './routes/dashboard';
+
+routes: [
+  { path: '/dashboard', component: DashboardPage },
+],
 ```
 
 ### Module Configuration
@@ -173,6 +186,75 @@ export default function ProductDetail({ params }: { params?: Record<string, stri
 }
 ```
 
+## Route Metadata
+
+Module route components render through the catch-all page, so Next.js never sees
+a per-route `metadata` export directly. next-modular resolves it for you.
+
+Export `metadata` (static) or `generateMetadata` (dynamic) from a route file,
+exactly like an idiomatic Next.js page:
+
+```tsx
+// routes/detail.tsx
+import type { Metadata } from 'next';
+
+// Static:
+export const metadata: Metadata = { title: 'Detail' };
+
+// Or dynamic, from the matched params:
+export function generateMetadata({ params }: { params: Record<string, string> }): Metadata {
+  return { title: `Item ${params.id}` };
+}
+
+export default function DetailPage({ params }: { params: { id: string } }) {
+  return <div>Item {params.id}</div>;
+}
+```
+
+Wire the route with `route()` (so the exports get picked up), then resolve
+metadata in the catch-all page via `handleMetadata`:
+
+```tsx
+// app/[...module]/page.tsx
+import { handleMetadata } from 'next-modular';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ module: string[] }>;
+}): Promise<Metadata> {
+  const { module } = await params;
+  return (await handleMetadata('/' + module.join('/'))) ?? {};
+}
+```
+
+When both are present, `generateMetadata` wins. App-wide defaults still belong
+in your root `layout.tsx` as usual. On the Edge Runtime, use `handleMetadataWith(modules, pathname)`.
+
+Note: `params` is passed to `generateMetadata` as a plain resolved object (not a
+Promise), since module routes render through the catch-all rather than directly.
+
+## Global Middleware
+
+By default a module's middleware only runs for requests under its `basePath`
+(or `/api/{basePath}`). Set `global: true` to run it on every request:
+
+```typescript
+export const myModule = defineModule({
+  name: 'my-module',
+  basePath: '/my-module',
+  middleware: {
+    handler: myMiddleware,
+    global: true, // runs on all requests; do any path filtering in the handler
+  },
+});
+```
+
+Global and scoped middleware run in registration order; the first handler to
+return a value short-circuits the chain. The `enabled` and `features.middleware`
+toggles still apply.
+
 ## Development
 
 ```bash
@@ -213,11 +295,16 @@ next-modular/
 | Function | Description |
 |----------|-------------|
 | `defineModule(definition)` | Define a new module with routes, API, and middleware |
+| `route(path, mod)` | Wire a route file (default component + optional metadata) into a route |
 | `handleRoute(pathname)` | Match a pathname to a module route component |
 | `handleApiRoute(req, pathname)` | Handle API route requests |
-| `handleMiddleware(req)` | Execute middleware for matching modules |
+| `handleMiddleware(req)` | Execute middleware for matching (and global) modules |
+| `handleMetadata(pathname)` | Resolve Next.js metadata for a matched route |
 | `withNextModular(config)` | Next.js config plugin to register modules |
 | `getModuleConfig(moduleName)` | Retrieve module configuration at runtime |
+
+Edge Runtime equivalents (`next-modular/edge`): `handleRouteWith`,
+`handleApiRouteWith`, `handleMiddlewareWith`, `handleMetadataWith`, plus `route`.
 
 ## Contributing
 

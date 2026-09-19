@@ -12,7 +12,7 @@ let runtimeConfig: NextModularConfig | null = null;
 export function configureModules(config: NextModularConfig) {
   // Store config for runtime
   runtimeConfig = config;
-  
+
   // Clear existing modules
   moduleRegistry.clear();
 
